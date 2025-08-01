@@ -3,8 +3,6 @@ import {
   Box,
   Typography,
   Button,
-  Card,
-  CardContent,
   TextField,
   Dialog,
   DialogTitle,
@@ -18,12 +16,10 @@ import {
   Paper,
   Avatar,
   Chip,
-  Slider,
   Snackbar,
   Alert,
   Slide,
-  InputAdornment,
-  Tooltip
+  InputAdornment
 } from '@mui/material';
 import { Add as AddIcon, Edit as EditIcon, Delete as DeleteIcon, Category as CategoryIcon } from '@mui/icons-material';
 import {

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import {
-  Box, Drawer, List, ListItem, ListItemButton, ListItemIcon, ListItemText, Toolbar, Typography, AppBar, IconButton, Avatar, Menu, MenuItem, useTheme, useMediaQuery, Paper
+  Box, Drawer, List, ListItem, ListItemButton, ListItemIcon, ListItemText, Toolbar, Typography, AppBar, IconButton, Avatar, Menu, MenuItem, useTheme, useMediaQuery
 } from '@mui/material';
 import MenuIcon from '@mui/icons-material/Menu';
 import { Outlet, Link as RouterLink, useLocation } from 'react-router-dom';

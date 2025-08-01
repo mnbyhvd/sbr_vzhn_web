@@ -1,8 +1,6 @@
-import React, { useEffect, useState } from 'react';
-import { Box, Typography, Paper, Button, Card, CardContent, Divider, Stack, TextField } from '@mui/material';
+import React, { useState } from 'react';
+import { Box, Typography, Button, Card, CardContent, Divider, Stack, TextField } from '@mui/material';
 import Grid from '@mui/material/Grid';
-import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
 import { Line } from 'react-chartjs-2';
 import {
   Chart as ChartJS,
@@ -16,36 +14,37 @@ import {
 } from 'chart.js';
 import dayjs from 'dayjs';
 
-interface Project {
-  id: number;
-  title: string;
-  description: string;
-  image: string;
-  client: string;
-  industry: string;
-  technologies: string;
-  details: string;
-  createdAt: string;
-}
-interface Vacancy {
-  id: number;
-  title: string;
-  description: string;
-  requirements: string;
-  createdAt: string;
-}
-interface Partner {
-  id: number;
-  name: string;
-  logo: string;
-}
-interface RequestItem {
-  id: number;
-  name: string;
-  email: string;
-  message: string;
-  createdAt: string;
-}
+// Интерфейсы для будущего использования
+// interface Project {
+//   id: number;
+//   title: string;
+//   description: string;
+//   image: string;
+//   client: string;
+//   industry: string;
+//   technologies: string;
+//   details: string;
+//   createdAt: string;
+// }
+// interface Vacancy {
+//   id: number;
+//   title: string;
+//   description: string;
+//   requirements: string;
+//   createdAt: string;
+// }
+// interface Partner {
+//   id: number;
+//   name: string;
+//   logo: string;
+// }
+// interface RequestItem {
+//   id: number;
+//   name: string;
+//   email: string;
+//   message: string;
+//   createdAt: string;
+// }
 
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend);
 
@@ -72,6 +71,10 @@ const DashboardPage: React.FC = () => {
   const [startDate, setStartDate] = useState(defaultStart);
   const [endDate, setEndDate] = useState(defaultEnd);
   const [stats, setStats] = useState(() => getRandomStats(defaultStart, defaultEnd));
+  
+  // Вычисляем заявки и конверсию
+  const leads = Math.round(stats.visits * (0.03 + Math.random() * 0.04));
+  const conversion = stats.visits > 0 ? parseFloat(((leads / stats.visits) * 100).toFixed(1)) : 0;
 
   const handleDateChange = (type: 'start' | 'end', value: string) => {
     if (type === 'start') setStartDate(value);
@@ -102,8 +105,6 @@ const DashboardPage: React.FC = () => {
   };
 
   // Мок: заявки = 3-7% от визитов
-  const leads = Math.round(stats.visits * (0.03 + Math.random() * 0.04));
-  const conversion = stats.visits > 0 ? ((leads / stats.visits) * 100).toFixed(1) : '0';
 
   // Для графика: линия конверсии
   const chartData = {

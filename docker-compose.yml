@@ -1,0 +1,74 @@
+version: '3.8'
+
+services:
+  # База данных PostgreSQL
+  postgres:
+    image: postgres:15-alpine
+    container_name: sbr_vzhn_postgres
+    environment:
+      POSTGRES_DB: sbr_vzhn_db
+      POSTGRES_USER: sbr_vzhn_user
+      POSTGRES_PASSWORD: sbr_vzhn_password
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    networks:
+      - sbr_vzhn_network
+    restart: unless-stopped
+
+  # Backend API
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: sbr_vzhn_backend
+    environment:
+      DATABASE_URL: postgresql://sbr_vzhn_user:sbr_vzhn_password@postgres:5432/sbr_vzhn_db
+      NODE_ENV: production
+      PORT: 3000
+    volumes:
+      - backend_uploads:/app/uploads
+    ports:
+      - "3000:3000"
+    depends_on:
+      - postgres
+    networks:
+      - sbr_vzhn_network
+    restart: unless-stopped
+
+  # Frontend (основной сайт)
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: sbr_vzhn_frontend
+    ports:
+      - "80:80"
+    depends_on:
+      - backend
+    networks:
+      - sbr_vzhn_network
+    restart: unless-stopped
+
+  # Admin панель
+  admin:
+    build:
+      context: ./admin
+      dockerfile: Dockerfile
+    container_name: sbr_vzhn_admin
+    ports:
+      - "8080:80"
+    depends_on:
+      - backend
+    networks:
+      - sbr_vzhn_network
+    restart: unless-stopped
+
+volumes:
+  postgres_data:
+  backend_uploads:
+
+networks:
+  sbr_vzhn_network:
+    driver: bridge 
