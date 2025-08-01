@@ -1,21 +1,23 @@
 version: '3.8'
 
 services:
-  # База данных PostgreSQL
-  postgres:
-    image: postgres:15-alpine
-    container_name: sbr_vzhn_postgres
+  # База данных MySQL
+  mysql:
+    image: mysql:8.0
+    container_name: sbr_vzhn_mysql
     environment:
-      POSTGRES_DB: sbr_vzhn_db
-      POSTGRES_USER: sbr_vzhn_user
-      POSTGRES_PASSWORD: sbr_vzhn_password
+      MYSQL_ROOT_PASSWORD: root_password
+      MYSQL_DATABASE: sbr_vzhn_db
+      MYSQL_USER: sbr_vzhn_user
+      MYSQL_PASSWORD: sbr_vzhn_password
     volumes:
-      - postgres_data:/var/lib/postgresql/data
+      - mysql_data:/var/lib/mysql
     ports:
-      - "5432:5432"
+      - "3306:3306"
     networks:
       - sbr_vzhn_network
     restart: unless-stopped
+    command: --default-authentication-plugin=mysql_native_password
 
   # Backend API
   backend:
@@ -24,7 +26,7 @@ services:
       dockerfile: Dockerfile
     container_name: sbr_vzhn_backend
     environment:
-      DATABASE_URL: postgresql://sbr_vzhn_user:sbr_vzhn_password@postgres:5432/sbr_vzhn_db
+      DATABASE_URL: mysql://sbr_vzhn_user:sbr_vzhn_password@mysql:3306/sbr_vzhn_db
       NODE_ENV: production
       PORT: 3000
     volumes:
@@ -32,7 +34,7 @@ services:
     ports:
       - "3000:3000"
     depends_on:
-      - postgres
+      - mysql
     networks:
       - sbr_vzhn_network
     restart: unless-stopped
@@ -66,7 +68,7 @@ services:
     restart: unless-stopped
 
 volumes:
-  postgres_data:
+  mysql_data:
   backend_uploads:
 
 networks:
