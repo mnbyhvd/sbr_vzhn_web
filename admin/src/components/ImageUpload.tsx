@@ -39,7 +39,7 @@ const ImageUpload: React.FC<ImageUploadProps> = ({ value, onChange, label = 'Ð—Ð
       const formData = new FormData();
       formData.append('image', file);
 
-      const response = await axios.post('http://localhost:3000/api/upload', formData, {
+      const response = await axios.post('/api/upload', formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
         },
@@ -83,7 +83,7 @@ const ImageUpload: React.FC<ImageUploadProps> = ({ value, onChange, label = 'Ð—Ð
       {value ? (
         <Box sx={{ position: 'relative', display: 'inline-block' }}>
           <img
-            src={`http://localhost:3000${value}`}
+            src={`/api${value}`}
             alt="Preview"
             style={{
               width: '100%',

@@ -86,7 +86,7 @@ const SortableItem: React.FC<{ member: TeamMember; onEdit: (m: TeamMember) => vo
     >
       <Avatar
         src={member.image && member.image.length > 0
-          ? (member.image.startsWith('http') ? member.image : `http://localhost:3000${member.image}`)
+          ? (member.image.startsWith('http') ? member.image : `/api${member.image}`)
           : undefined}
         alt={member.name}
         sx={{ 
@@ -165,7 +165,7 @@ const TeamPage: React.FC = () => {
   const fetchTeamMembers = async () => {
     setLoading(true);
     try {
-      const response = await fetch('http://localhost:3000/api/team');
+      const response = await fetch('/api/team');
       const data = await response.json();
       setTeamMembers(data);
       setLoading(false);
@@ -179,13 +179,13 @@ const TeamPage: React.FC = () => {
   const handleSubmit = async () => {
     try {
       if (editingMember) {
-        await fetch(`http://localhost:3000/api/team/${editingMember.id}`, {
+        await fetch(`/api/team/${editingMember.id}`, {
           method: 'PUT',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(formData),
         });
       } else {
-        await fetch('http://localhost:3000/api/team', {
+        await fetch('/api/team', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(formData),
@@ -221,7 +221,7 @@ const TeamPage: React.FC = () => {
   const confirmDelete = async () => {
     if (!deleting) return;
     try {
-      await fetch(`http://localhost:3000/api/team/${deleting.id}`, {
+      await fetch(`/api/team/${deleting.id}`, {
         method: 'DELETE',
       });
       setDeleting(null);
@@ -245,7 +245,7 @@ const TeamPage: React.FC = () => {
         // Обновляем порядок в базе данных
         newItems.forEach(async (item, index) => {
           try {
-            await fetch(`http://localhost:3000/api/team/${item.id}`, {
+            await fetch(`/api/team/${item.id}`, {
               method: 'PUT',
               headers: { 'Content-Type': 'application/json' },
               body: JSON.stringify({ ...item, order: index }),

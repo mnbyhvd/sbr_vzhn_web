@@ -3,7 +3,7 @@ import { Box, Typography, Tabs, Tab, TextField, Button, Snackbar, Alert, Paper, 
 import axios from 'axios';
 import ContentCopyIcon from '@mui/icons-material/ContentCopy';
 
-const API_URL = 'http://localhost:3000/api/site-settings';
+const API_URL = '/api/site-settings';
 
 const tabLabels = ['Цвета', 'Тексты', 'Контакты', 'Соцсети', 'QR', 'Прочее'];
 

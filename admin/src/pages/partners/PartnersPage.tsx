@@ -89,7 +89,7 @@ const SortableItem: React.FC<{ partner: Partner; onEdit: (p: Partner) => void; o
     >
       <Avatar
         src={partner.logo && partner.logo.length > 0
-          ? (partner.logo.startsWith('http') ? partner.logo : `http://localhost:3000${partner.logo}`)
+          ? (partner.logo.startsWith('http') ? partner.logo : `/api${partner.logo}`)
           : undefined}
         alt={partner.name}
         sx={{ 
@@ -167,7 +167,7 @@ const PartnersPage: React.FC = () => {
   const fetchPartners = async () => {
     setLoading(true);
     try {
-      const response = await fetch('http://localhost:3000/api/partners');
+      const response = await fetch('/api/partners');
       const data = await response.json();
       setPartners(data);
       setLoading(false);
@@ -181,13 +181,13 @@ const PartnersPage: React.FC = () => {
   const handleSubmit = async () => {
     try {
       if (editingPartner) {
-        await fetch(`http://localhost:3000/api/partners/${editingPartner.id}`, {
+        await fetch(`/api/partners/${editingPartner.id}`, {
           method: 'PUT',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(formData),
         });
       } else {
-        await fetch('http://localhost:3000/api/partners', {
+        await fetch('/api/partners', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(formData),
@@ -222,7 +222,7 @@ const PartnersPage: React.FC = () => {
   const confirmDelete = async () => {
     if (!deleting) return;
     try {
-      await fetch(`http://localhost:3000/api/partners/${deleting.id}`, {
+      await fetch(`/api/partners/${deleting.id}`, {
         method: 'DELETE',
       });
       setDeleting(null);
@@ -246,7 +246,7 @@ const PartnersPage: React.FC = () => {
         // Обновляем порядок в базе данных
         newItems.forEach(async (item, index) => {
           try {
-            await fetch(`http://localhost:3000/api/partners/${item.id}`, {
+            await fetch(`/api/partners/${item.id}`, {
               method: 'PUT',
               headers: { 'Content-Type': 'application/json' },
               body: JSON.stringify({ ...item, order: index }),
