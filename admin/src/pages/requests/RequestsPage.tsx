@@ -17,7 +17,7 @@ const RequestsPage: React.FC = () => {
 
   const fetchRequests = () => {
     setLoading(true);
-    axios.get('http://localhost:3001/api/requests')
+    axios.get('http://localhost:3000/api/requests')
       .then(res => setRequests(res.data))
       .finally(() => setLoading(false));
   };
@@ -27,7 +27,7 @@ const RequestsPage: React.FC = () => {
   }, []);
 
   const handleDelete = async (id: number) => {
-    await axios.delete(`http://localhost:3001/api/requests/${id}`);
+          await axios.delete(`http://localhost:3000/api/requests/${id}`);
     fetchRequests();
   };
 
