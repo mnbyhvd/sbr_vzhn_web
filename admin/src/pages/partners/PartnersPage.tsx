@@ -1,3 +1,4 @@
+import { safeApiCall, getDataWithFallback } from "../../utils/api";
 import React, { useState, useEffect } from 'react';
 import {
   Box,
@@ -167,7 +168,7 @@ const PartnersPage: React.FC = () => {
   const fetchPartners = async () => {
     setLoading(true);
     try {
-      const response = await fetch('/api/partners');
+      const response = await safeApiCall('/api/partners');
       const data = await response.json();
       setPartners(data);
       setLoading(false);
@@ -181,13 +182,13 @@ const PartnersPage: React.FC = () => {
   const handleSubmit = async () => {
     try {
       if (editingPartner) {
-        await fetch(`/api/partners/${editingPartner.id}`, {
+        await safeApiCall(`/api/partners/${editingPartner.id}`, {
           method: 'PUT',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(formData),
         });
       } else {
-        await fetch('/api/partners', {
+        await safeApiCall('/api/partners', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(formData),
@@ -222,7 +223,7 @@ const PartnersPage: React.FC = () => {
   const confirmDelete = async () => {
     if (!deleting) return;
     try {
-      await fetch(`/api/partners/${deleting.id}`, {
+      await safeApiCall(`/api/partners/${deleting.id}`, {
         method: 'DELETE',
       });
       setDeleting(null);
@@ -246,7 +247,7 @@ const PartnersPage: React.FC = () => {
         // Обновляем порядок в базе данных
         newItems.forEach(async (item, index) => {
           try {
-            await fetch(`/api/partners/${item.id}`, {
+            await safeApiCall(`/api/partners/${item.id}`, {
               method: 'PUT',
               headers: { 'Content-Type': 'application/json' },
               body: JSON.stringify({ ...item, order: index }),

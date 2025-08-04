@@ -1,3 +1,4 @@
+import { safeApiCall, getDataWithFallback } from "../../utils/api";
 import React, { useState, useEffect } from 'react';
 import {
   Box,
@@ -165,7 +166,7 @@ const TeamPage: React.FC = () => {
   const fetchTeamMembers = async () => {
     setLoading(true);
     try {
-      const response = await fetch('/api/team');
+      const response = await safeApiCall('/api/team');
       const data = await response.json();
       setTeamMembers(data);
       setLoading(false);
@@ -179,13 +180,13 @@ const TeamPage: React.FC = () => {
   const handleSubmit = async () => {
     try {
       if (editingMember) {
-        await fetch(`/api/team/${editingMember.id}`, {
+        await safeApiCall(`/api/team/${editingMember.id}`, {
           method: 'PUT',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(formData),
         });
       } else {
-        await fetch('/api/team', {
+        await safeApiCall('/api/team', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(formData),
@@ -221,7 +222,7 @@ const TeamPage: React.FC = () => {
   const confirmDelete = async () => {
     if (!deleting) return;
     try {
-      await fetch(`/api/team/${deleting.id}`, {
+      await safeApiCall(`/api/team/${deleting.id}`, {
         method: 'DELETE',
       });
       setDeleting(null);
@@ -245,7 +246,7 @@ const TeamPage: React.FC = () => {
         // Обновляем порядок в базе данных
         newItems.forEach(async (item, index) => {
           try {
-            await fetch(`/api/team/${item.id}`, {
+            await safeApiCall(`/api/team/${item.id}`, {
               method: 'PUT',
               headers: { 'Content-Type': 'application/json' },
               body: JSON.stringify({ ...item, order: index }),

@@ -1,3 +1,4 @@
+import { safeApiCall, getDataWithFallback } from "../../utils/api";
 import React, { useState, useEffect } from 'react';
 import {
   Box,
@@ -152,24 +153,24 @@ const FaqPage: React.FC = () => {
 
   const fetchFaqs = async () => {
     try {
-      const response = await fetch('/api/faq');
-      const data = await response.json();
+      const data = await getDataWithFallback('/api/faq');
       setFaqs(data);
     } catch (error) {
       console.error('Error fetching FAQs:', error);
+      setFaqs([]);
     }
   };
 
   const handleSubmit = async () => {
     try {
       if (editingFaq) {
-        await fetch(`/api/faq/${editingFaq.id}`, {
+        await safeApiCall(`/api/faq/${editingFaq.id}`, {
           method: 'PUT',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(formData),
         });
       } else {
-        await fetch('/api/faq', {
+        await safeApiCall('/api/faq', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(formData),
@@ -196,7 +197,7 @@ const FaqPage: React.FC = () => {
   const handleDelete = async (id: number) => {
     if (window.confirm('Вы уверены, что хотите удалить этот вопрос?')) {
       try {
-        await fetch(`/api/faq/${id}`, {
+        await safeApiCall(`/api/faq/${id}`, {
           method: 'DELETE',
         });
         fetchFaqs();
@@ -219,7 +220,7 @@ const FaqPage: React.FC = () => {
         // Обновляем порядок в базе данных
         newItems.forEach(async (item, index) => {
           try {
-            await fetch(`/api/faq/${item.id}`, {
+            await safeApiCall(`/api/faq/${item.id}`, {
               method: 'PUT',
               headers: { 'Content-Type': 'application/json' },
               body: JSON.stringify({ ...item, order: index }),

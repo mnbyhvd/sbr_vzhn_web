@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
-import axios from 'axios';
-import { Box, Typography, Paper, Table, TableHead, TableRow, TableCell, TableBody, IconButton, Tooltip, TableContainer, CircularProgress } from '@mui/material';
+import { Box, Typography, Paper, Table, TableHead, TableRow, TableCell, TableBody, IconButton, Tooltip, TableContainer, CircularProgress, Alert } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
+import { safeApiCall, getDataWithFallback } from '../../utils/api';
 
 interface RequestItem {
   id: number;
@@ -14,12 +14,20 @@ interface RequestItem {
 const RequestsPage: React.FC = () => {
   const [requests, setRequests] = useState<RequestItem[]>([]);
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
-  const fetchRequests = () => {
+  const fetchRequests = async () => {
     setLoading(true);
-    axios.get('/api/requests')
-      .then(res => setRequests(res.data))
-      .finally(() => setLoading(false));
+    setError(null);
+    try {
+      const data = await getDataWithFallback('/api/requests');
+      setRequests(data);
+    } catch (err) {
+      setError('Ошибка загрузки данных');
+      console.error('Error fetching requests:', err);
+    } finally {
+      setLoading(false);
+    }
   };
 
   useEffect(() => {
@@ -27,14 +35,32 @@ const RequestsPage: React.FC = () => {
   }, []);
 
   const handleDelete = async (id: number) => {
-          await axios.delete(`/api/requests/${id}`);
-    fetchRequests();
+    try {
+      const result = await safeApiCall(`/api/requests/${id}`, {
+        method: 'DELETE',
+      });
+      if (result !== null) {
+        fetchRequests();
+      } else {
+        setError('Ошибка удаления');
+      }
+    } catch (err) {
+      setError('Ошибка удаления');
+      console.error('Error deleting request:', err);
+    }
   };
 
   return (
     <Box sx={{ width: '100%', px: { xs: 2, md: 4 }, py: 3 }}>
       <Box display="flex" flexDirection="column" sx={{ height: '100%' }}>
       <Typography variant="h4" sx={{ mb: 4, fontWeight: 700 }}>Заявки с сайта</Typography>
+        
+        {error && (
+          <Alert severity="error" sx={{ mb: 2 }}>
+            {error}
+          </Alert>
+        )}
+        
         <Box sx={{ flexGrow: 1, display: 'flex', flexDirection: 'column', minHeight: 0 }}>
           {loading ? (
             <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: 200 }}>

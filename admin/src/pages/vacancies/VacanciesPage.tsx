@@ -1,3 +1,4 @@
+import { safeApiCall, getDataWithFallback } from "../../utils/api";
 import React, { useState, useEffect } from 'react';
 import {
   Box,
@@ -242,7 +243,7 @@ const VacanciesPage: React.FC = () => {
   const fetchVacancies = async () => {
     setLoading(true);
     try {
-      const response = await fetch('/api/vacancies');
+      const response = await safeApiCall('/api/vacancies');
       const data = await response.json();
       if (Array.isArray(data)) {
         setVacancies(data);
@@ -261,7 +262,7 @@ const VacanciesPage: React.FC = () => {
 
   const fetchCategories = async () => {
     try {
-      const response = await fetch('/api/vacancies/categories');
+      const response = await safeApiCall('/api/vacancies/categories');
       const data = await response.json();
       if (Array.isArray(data)) {
         setCategories(data);
@@ -279,13 +280,13 @@ const VacanciesPage: React.FC = () => {
   const handleSubmit = async () => {
     try {
       if (editingVacancy) {
-        await fetch(`/api/vacancies/${editingVacancy.id}`, {
+        await safeApiCall(`/api/vacancies/${editingVacancy.id}`, {
           method: 'PUT',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(formData),
         });
       } else {
-        await fetch('/api/vacancies', {
+        await safeApiCall('/api/vacancies', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(formData),
@@ -335,7 +336,7 @@ const VacanciesPage: React.FC = () => {
   const confirmDelete = async () => {
     if (!deleting) return;
     try {
-      await fetch(`/api/vacancies/${deleting.id}`, {
+      await safeApiCall(`/api/vacancies/${deleting.id}`, {
         method: 'DELETE',
       });
       setDeleting(null);
@@ -359,7 +360,7 @@ const VacanciesPage: React.FC = () => {
         // Обновляем порядок в базе данных
         newItems.forEach(async (item, index) => {
           try {
-            await fetch(`/api/vacancies/${item.id}`, {
+            await safeApiCall(`/api/vacancies/${item.id}`, {
               method: 'PUT',
               headers: { 'Content-Type': 'application/json' },
               body: JSON.stringify({ ...item, order: index }),
@@ -377,7 +378,7 @@ const VacanciesPage: React.FC = () => {
 
   const handleOpenResponses = async (vacancy: Vacancy) => {
     setResponsesVacancy(vacancy);
-    const res = await fetch(`/api/vacancies/${vacancy.id}/responses`);
+    const res = await safeApiCall(`/api/vacancies/${vacancy.id}/responses`);
     const data = await res.json();
     setResponses(data);
     setOpenResponses(true);
@@ -524,7 +525,7 @@ const VacanciesPage: React.FC = () => {
                   setFormData({ ...formData, categoryId: existing.id });
                 } else {
                   // Если введено новое название, создаём категорию
-                  const response = await fetch('/api/vacancies/categories', {
+                  const response = await safeApiCall('/api/vacancies/categories', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ name: newValue }),

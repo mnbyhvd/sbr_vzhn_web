@@ -1,3 +1,4 @@
+import { safeApiCall, getDataWithFallback } from "../../utils/api";
 import React, { useState, useEffect } from 'react';
 import {
   Box,
@@ -121,7 +122,7 @@ const InternationalExperiencePage: React.FC = () => {
 
   const fetchExperiences = async () => {
     try {
-      const response = await fetch('/api/international-experience');
+      const response = await safeApiCall('/api/international-experience');
       const data = await response.json();
       setExperiences(data);
     } catch (error) {
@@ -132,13 +133,13 @@ const InternationalExperiencePage: React.FC = () => {
   const handleSubmit = async () => {
     try {
       if (editingExperience) {
-        await fetch(`/api/international-experience/${editingExperience.id}`, {
+        await safeApiCall(`/api/international-experience/${editingExperience.id}`, {
           method: 'PUT',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(formData),
         });
       } else {
-        await fetch('/api/international-experience', {
+        await safeApiCall('/api/international-experience', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(formData),
@@ -162,7 +163,7 @@ const InternationalExperiencePage: React.FC = () => {
   const handleDelete = async (id: number) => {
     if (window.confirm('Вы уверены, что хотите удалить этот опыт?')) {
       try {
-        await fetch(`/api/international-experience/${id}`, {
+        await safeApiCall(`/api/international-experience/${id}`, {
           method: 'DELETE',
         });
         fetchExperiences();
@@ -185,7 +186,7 @@ const InternationalExperiencePage: React.FC = () => {
         // Обновляем порядок в базе данных
         newItems.forEach(async (item, index) => {
           try {
-            await fetch(`/api/international-experience/${item.id}`, {
+            await safeApiCall(`/api/international-experience/${item.id}`, {
               method: 'PUT',
               headers: { 'Content-Type': 'application/json' },
               body: JSON.stringify({ ...item, order: index }),

@@ -1,3 +1,4 @@
+import { safeApiCall, getDataWithFallback } from "../../utils/api";
 import React, { useState, useEffect } from 'react';
 import {
   Box,
@@ -212,7 +213,7 @@ const ProjectsPage: React.FC = () => {
 
   // Загрузка направлений
   useEffect(() => {
-    fetch('/api/directions')
+    safeApiCall('/api/directions')
       .then(res => res.json())
       .then(setDirections);
   }, []);
@@ -230,7 +231,7 @@ const ProjectsPage: React.FC = () => {
       }
       if (filterClient) params.append('client', filterClient);
       if (search) params.append('search', search);
-      const response = await fetch('/api/projects?' + params.toString());
+      const response = await safeApiCall('/api/projects?' + params.toString());
       const data = await response.json();
       setProjects(data);
       setLoading(false);
@@ -246,13 +247,13 @@ const ProjectsPage: React.FC = () => {
       const directionIds = formData['directionIds'] || [];
       const payload = { ...formData, directionIds };
       if (editingProject) {
-        await fetch(`/api/projects/${editingProject.id}`, {
+        await safeApiCall(`/api/projects/${editingProject.id}`, {
           method: 'PUT',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(payload),
         });
       } else {
-        await fetch('/api/projects', {
+        await safeApiCall('/api/projects', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(payload),
@@ -324,7 +325,7 @@ const ProjectsPage: React.FC = () => {
   const confirmDelete = async () => {
     if (!deleting) return;
     try {
-      await fetch(`/api/projects/${deleting.id}`, {
+      await safeApiCall(`/api/projects/${deleting.id}`, {
         method: 'DELETE',
       });
       setDeleting(null);
@@ -348,7 +349,7 @@ const ProjectsPage: React.FC = () => {
         // Обновляем порядок в базе данных
         newItems.forEach(async (item, index) => {
           try {
-            await fetch(`/api/projects/${item.id}`, {
+            await safeApiCall(`/api/projects/${item.id}`, {
               method: 'PUT',
               headers: { 'Content-Type': 'application/json' },
               body: JSON.stringify({ ...item, order: index }),

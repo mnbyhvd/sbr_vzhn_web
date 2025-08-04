@@ -1,3 +1,4 @@
+import { safeApiCall, getDataWithFallback } from "../../utils/api";
 import React, { useState, useEffect } from 'react';
 import {
   Box,
@@ -169,7 +170,7 @@ const DirectionsPage: React.FC = () => {
   const fetchDirections = async () => {
     setLoading(true);
     try {
-      const response = await fetch('/api/directions');
+      const response = await safeApiCall('/api/directions');
       const data = await response.json();
       setDirections(data);
       setLoading(false);
@@ -183,13 +184,13 @@ const DirectionsPage: React.FC = () => {
   const handleSubmit = async () => {
     try {
       if (editingDirection) {
-        await fetch(`/api/directions/${editingDirection.id}`, {
+        await safeApiCall(`/api/directions/${editingDirection.id}`, {
           method: 'PUT',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(formData),
         });
       } else {
-        await fetch('/api/directions', {
+        await safeApiCall('/api/directions', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(formData),
@@ -225,7 +226,7 @@ const DirectionsPage: React.FC = () => {
   const confirmDelete = async () => {
     if (!deleting) return;
     try {
-      await fetch(`/api/directions/${deleting.id}`, {
+      await safeApiCall(`/api/directions/${deleting.id}`, {
         method: 'DELETE',
       });
       setDeleting(null);
@@ -249,7 +250,7 @@ const DirectionsPage: React.FC = () => {
         // Обновляем порядок в базе данных
         newItems.forEach(async (item, index) => {
           try {
-            await fetch(`/api/directions/${item.id}`, {
+            await safeApiCall(`/api/directions/${item.id}`, {
               method: 'PUT',
               headers: { 'Content-Type': 'application/json' },
               body: JSON.stringify({ ...item, order: index }),
