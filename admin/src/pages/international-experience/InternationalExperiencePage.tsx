@@ -121,7 +121,7 @@ const InternationalExperiencePage: React.FC = () => {
 
   const fetchExperiences = async () => {
     try {
-      const response = await fetch('http://localhost:3001/api/international-experience');
+      const response = await fetch('http://localhost:3000/api/international-experience');
       const data = await response.json();
       setExperiences(data);
     } catch (error) {
@@ -132,13 +132,13 @@ const InternationalExperiencePage: React.FC = () => {
   const handleSubmit = async () => {
     try {
       if (editingExperience) {
-        await fetch(`http://localhost:3001/api/international-experience/${editingExperience.id}`, {
+        await fetch(`http://localhost:3000/api/international-experience/${editingExperience.id}`, {
           method: 'PUT',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(formData),
         });
       } else {
-        await fetch('http://localhost:3001/api/international-experience', {
+        await fetch('http://localhost:3000/api/international-experience', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(formData),
@@ -162,7 +162,7 @@ const InternationalExperiencePage: React.FC = () => {
   const handleDelete = async (id: number) => {
     if (window.confirm('Вы уверены, что хотите удалить этот опыт?')) {
       try {
-        await fetch(`http://localhost:3001/api/international-experience/${id}`, {
+        await fetch(`http://localhost:3000/api/international-experience/${id}`, {
           method: 'DELETE',
         });
         fetchExperiences();
@@ -185,7 +185,7 @@ const InternationalExperiencePage: React.FC = () => {
         // Обновляем порядок в базе данных
         newItems.forEach(async (item, index) => {
           try {
-            await fetch(`http://localhost:3001/api/international-experience/${item.id}`, {
+            await fetch(`http://localhost:3000/api/international-experience/${item.id}`, {
               method: 'PUT',
               headers: { 'Content-Type': 'application/json' },
               body: JSON.stringify({ ...item, order: index }),

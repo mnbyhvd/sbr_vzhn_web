@@ -83,7 +83,7 @@ const ImageUpload: React.FC<ImageUploadProps> = ({ value, onChange, label = 'Ð—Ð
       {value ? (
         <Box sx={{ position: 'relative', display: 'inline-block' }}>
           <img
-            src={`http://localhost:3001${value}`}
+            src={`http://localhost:3000${value}`}
             alt="Preview"
             style={{
               width: '100%',

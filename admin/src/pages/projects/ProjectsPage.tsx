@@ -108,7 +108,7 @@ const SortableItem: React.FC<{ project: Project; onEdit: (p: Project) => void; o
     >
       <Avatar
         src={project.image && project.image.length > 0
-          ? (project.image.startsWith('http') ? project.image : `http://localhost:3001${project.image}`)
+          ? (project.image.startsWith('http') ? project.image : `http://localhost:3000${project.image}`)
           : undefined}
         alt={project.title}
         sx={{ 
@@ -212,7 +212,7 @@ const ProjectsPage: React.FC = () => {
 
   // Загрузка направлений
   useEffect(() => {
-    fetch('http://localhost:3001/api/directions')
+    fetch('http://localhost:3000/api/directions')
       .then(res => res.json())
       .then(setDirections);
   }, []);
@@ -230,7 +230,7 @@ const ProjectsPage: React.FC = () => {
       }
       if (filterClient) params.append('client', filterClient);
       if (search) params.append('search', search);
-      const response = await fetch('http://localhost:3001/api/projects?' + params.toString());
+      const response = await fetch('http://localhost:3000/api/projects?' + params.toString());
       const data = await response.json();
       setProjects(data);
       setLoading(false);
@@ -246,13 +246,13 @@ const ProjectsPage: React.FC = () => {
       const directionIds = formData['directionIds'] || [];
       const payload = { ...formData, directionIds };
       if (editingProject) {
-        await fetch(`http://localhost:3001/api/projects/${editingProject.id}`, {
+        await fetch(`http://localhost:3000/api/projects/${editingProject.id}`, {
           method: 'PUT',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(payload),
         });
       } else {
-        await fetch('http://localhost:3001/api/projects', {
+        await fetch('http://localhost:3000/api/projects', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(payload),
@@ -324,7 +324,7 @@ const ProjectsPage: React.FC = () => {
   const confirmDelete = async () => {
     if (!deleting) return;
     try {
-      await fetch(`http://localhost:3001/api/projects/${deleting.id}`, {
+      await fetch(`http://localhost:3000/api/projects/${deleting.id}`, {
         method: 'DELETE',
       });
       setDeleting(null);
@@ -348,7 +348,7 @@ const ProjectsPage: React.FC = () => {
         // Обновляем порядок в базе данных
         newItems.forEach(async (item, index) => {
           try {
-            await fetch(`http://localhost:3001/api/projects/${item.id}`, {
+            await fetch(`http://localhost:3000/api/projects/${item.id}`, {
               method: 'PUT',
               headers: { 'Content-Type': 'application/json' },
               body: JSON.stringify({ ...item, order: index }),
