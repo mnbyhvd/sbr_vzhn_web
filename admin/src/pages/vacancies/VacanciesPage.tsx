@@ -241,12 +241,13 @@ const VacanciesPage: React.FC = () => {
   }, []);
 
   const fetchVacancies = async () => {
+    console.log('🔄 Fetching vacancies...');
     setLoading(true);
     try {
-      const response = await safeApiCall('/api/vacancies');
-      const data = await response.json();
+      const data = await getDataWithFallback('/api/vacancies');
       if (Array.isArray(data)) {
-        setVacancies(data);
+        console.log('✅ Vacancies loaded:', data);
+      setVacancies(data);
         setVacancyError(null);
       } else {
         setVacancies([]);
@@ -261,11 +262,12 @@ const VacanciesPage: React.FC = () => {
   };
 
   const fetchCategories = async () => {
+    console.log('🔄 Fetching categories...');
     try {
-      const response = await safeApiCall('/api/vacancies/categories');
-      const data = await response.json();
+      const data = await getDataWithFallback('/api/vacancies/categories');
       if (Array.isArray(data)) {
-        setCategories(data);
+        console.log('✅ Categories loaded:', data);
+      setCategories(data);
         setCategoryError(null);
       } else {
         setCategories([]);

@@ -166,14 +166,15 @@ const PartnersPage: React.FC = () => {
   }, []);
 
   const fetchPartners = async () => {
+    console.log('🔄 Fetching partners...');
     setLoading(true);
     try {
-      const response = await safeApiCall('/api/partners');
-      const data = await response.json();
+      const data = await getDataWithFallback('/api/partners');
+      console.log('✅ Partners loaded:', data);
       setPartners(data);
       setLoading(false);
     } catch (error) {
-      console.error('Error fetching partners:', error);
+      console.error('❌ Error fetching partners:', error);
       setSnackbar({open: true, message: 'Ошибка загрузки партнёров', severity: 'error'});
       setLoading(false);
     }

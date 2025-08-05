@@ -152,11 +152,15 @@ const FaqPage: React.FC = () => {
   }, []);
 
   const fetchFaqs = async () => {
+    console.log('🔄 Fetching FAQs...');
+    console.log('🔄 Fetching FAQs...');
     try {
       const data = await getDataWithFallback('/api/faq');
+      console.log('✅ FAQs loaded:', data);
+      console.log('✅ FAQs loaded:', data);
       setFaqs(data);
     } catch (error) {
-      console.error('Error fetching FAQs:', error);
+      console.error('❌ Error fetching FAQs:', error);
       setFaqs([]);
     }
   };

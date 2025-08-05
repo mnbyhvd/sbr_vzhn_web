@@ -17,14 +17,18 @@ const RequestsPage: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
 
   const fetchRequests = async () => {
+    console.log('🔄 Fetching requests...');
+    console.log('🔄 Fetching requests...');
     setLoading(true);
     setError(null);
     try {
       const data = await getDataWithFallback('/api/requests');
+      console.log('✅ Requests loaded:', data);
+      console.log('✅ Requests loaded:', data);
       setRequests(data);
     } catch (err) {
       setError('Ошибка загрузки данных');
-      console.error('Error fetching requests:', err);
+      console.error('❌ Error fetching requests:', err);
     } finally {
       setLoading(false);
     }

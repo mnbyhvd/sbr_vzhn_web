@@ -166,8 +166,7 @@ const TeamPage: React.FC = () => {
   const fetchTeamMembers = async () => {
     setLoading(true);
     try {
-      const response = await safeApiCall('/api/team');
-      const data = await response.json();
+      const data = await getDataWithFallback('/api/team');
       setTeamMembers(data);
       setLoading(false);
     } catch (error) {

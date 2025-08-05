@@ -121,12 +121,13 @@ const InternationalExperiencePage: React.FC = () => {
   }, []);
 
   const fetchExperiences = async () => {
+    console.log('🔄 Fetching experiences...');
     try {
-      const response = await safeApiCall('/api/international-experience');
-      const data = await response.json();
+      const data = await getDataWithFallback('/api/international-experience');
+      console.log('✅ Experiences loaded:', data);
       setExperiences(data);
     } catch (error) {
-      console.error('Error fetching experiences:', error);
+      console.error('❌ Error fetching experiences:', error);
     }
   };
 

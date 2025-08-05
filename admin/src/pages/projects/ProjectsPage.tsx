@@ -213,7 +213,7 @@ const ProjectsPage: React.FC = () => {
 
   // Загрузка направлений
   useEffect(() => {
-    safeApiCall('/api/directions')
+    getDataWithFallback('/api/directions')
       .then(res => res.json())
       .then(setDirections);
   }, []);
@@ -223,6 +223,7 @@ const ProjectsPage: React.FC = () => {
   }, [filterDirections, filterClient, search]);
 
   const fetchProjects = async () => {
+    console.log('🔄 Fetching projects...');
     setLoading(true);
     try {
       const params = new URLSearchParams();
@@ -232,11 +233,11 @@ const ProjectsPage: React.FC = () => {
       if (filterClient) params.append('client', filterClient);
       if (search) params.append('search', search);
       const response = await safeApiCall('/api/projects?' + params.toString());
-      const data = await response.json();
+      console.log('✅ Projects loaded:', data);
       setProjects(data);
       setLoading(false);
     } catch (error) {
-      console.error('Error fetching projects:', error);
+      console.error('❌ Error fetching projects:', error);
       setSnackbar({open: true, message: 'Ошибка загрузки проектов', severity: 'error'});
       setLoading(false);
     }

@@ -168,14 +168,15 @@ const DirectionsPage: React.FC = () => {
   }, []);
 
   const fetchDirections = async () => {
+    console.log('🔄 Fetching directions...');
     setLoading(true);
     try {
-      const response = await safeApiCall('/api/directions');
-      const data = await response.json();
+      const data = await getDataWithFallback('/api/directions');
+      console.log('✅ Directions loaded:', data);
       setDirections(data);
       setLoading(false);
     } catch (error) {
-      console.error('Error fetching directions:', error);
+      console.error('❌ Error fetching directions:', error);
       setSnackbar({open: true, message: 'Ошибка загрузки направлений', severity: 'error'});
       setLoading(false);
     }
