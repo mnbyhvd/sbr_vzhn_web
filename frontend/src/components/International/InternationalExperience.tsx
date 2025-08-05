@@ -15,7 +15,7 @@ const InternationalExperience: React.FC = () => {
   useEffect(() => {
     const fetchExperiences = async () => {
       try {
-        const response = await fetch('http://localhost:3001/api/international-experience');
+        const response = await fetch('/api/international-experience');
         const data = await response.json();
         setExperiences(data);
       } catch (error) {

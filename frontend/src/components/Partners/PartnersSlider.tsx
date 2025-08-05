@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { Box, Typography, useTheme } from '@mui/material';
 import axios from 'axios';
 
-const API_URL = 'http://localhost:3001/api/partners';
+const API_URL = '/api/partners';
 
 interface Partner {
   id: number;
@@ -70,7 +70,7 @@ const PartnersSlider: React.FC = () => {
                 }}
               >
                 <img
-                  src={partner.logo.startsWith('http') ? partner.logo : `http://localhost:3001${partner.logo}`}
+                  src={partner.logo.startsWith('http') ? partner.logo : `/api${partner.logo}`}
                   alt={partner.name}
                   style={{
                     maxHeight: '100%',

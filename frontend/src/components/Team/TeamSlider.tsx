@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { Box, Typography, Avatar, useMediaQuery } from '@mui/material';
 import axios from 'axios';
 
-const API_URL = 'http://localhost:3001/api/team';
+const API_URL = '/api/team';
 
 interface TeamMember {
   id: number;
@@ -114,7 +114,7 @@ const TeamSlider: React.FC = () => {
                 {isActive && (
                   <>
                     <Avatar 
-                      src={member.image.startsWith('http') ? member.image : `http://localhost:3001${member.image}`} 
+                      src={member.image.startsWith('http') ? member.image : `/api${member.image}`} 
                       alt={member.name} 
                       sx={{ width: 80, height: 80, mb: 2 }} 
                     />

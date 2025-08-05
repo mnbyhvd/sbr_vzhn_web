@@ -24,7 +24,7 @@ const DirectionsMosaic: React.FC = () => {
   useEffect(() => {
     const fetchDirections = async () => {
       try {
-        const response = await axios.get('http://localhost:3001/api/directions');
+        const response = await axios.get('/api/directions');
         setDirections(response.data);
       } catch (error) {
         console.error('Ошибка загрузки направлений:', error);

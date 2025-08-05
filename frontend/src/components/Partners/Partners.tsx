@@ -11,7 +11,7 @@ import 'swiper/css/pagination';
 // import required modules
 import { Navigation, Pagination } from 'swiper/modules';
 
-const API_URL = 'http://localhost:3001/api/partners';
+const API_URL = '/api/partners';
 
 interface Partner {
     id: number;

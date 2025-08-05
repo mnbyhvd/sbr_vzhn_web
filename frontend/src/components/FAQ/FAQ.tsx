@@ -4,7 +4,7 @@ import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import axios from 'axios';
 
-const API_URL = 'http://localhost:3001/api/faq';
+const API_URL = '/api/faq';
 
 interface FaqItem {
   id: number;

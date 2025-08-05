@@ -9,7 +9,7 @@ import {
   Tooltip
 } from '@mui/material';
 
-const API_URL = 'http://localhost:3001/api/partners';
+const API_URL = '/api/partners';
 
 interface Partner {
   id: number;

@@ -3,7 +3,7 @@ import { Box, Container, Typography, Paper, Button } from '@mui/material';
 import { Link } from 'react-router-dom';
 import axios from 'axios';
 
-const API_URL = 'http://localhost:3001/api/projects';
+const API_URL = '/api/projects';
 
 interface Project {
   id: number;
@@ -74,7 +74,7 @@ const Projects: React.FC = () => {
             >
               {project.image && (
                 <img 
-                  src={project.image.startsWith('http') ? project.image : `http://localhost:3001${project.image}`} 
+                  src={project.image.startsWith('http') ? project.image : `/api${project.image}`} 
                   alt={project.title} 
                   style={{ width: '100%', borderRadius: 12, marginBottom: 16 }} 
                 />

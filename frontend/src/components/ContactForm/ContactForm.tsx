@@ -3,7 +3,7 @@ import { Box, Typography, TextField, Button, Alert, InputAdornment } from '@mui/
 import PhoneIcon from '@mui/icons-material/Phone';
 import axios from 'axios';
 
-const API_URL = 'http://localhost:3001/api/requests';
+const API_URL = '/api/requests';
 
 const ContactForm: React.FC = () => {
   const [name, setName] = useState('');

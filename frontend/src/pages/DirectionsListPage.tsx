@@ -24,7 +24,7 @@ const DirectionsListPage: React.FC = () => {
   const [directionsError, setDirectionsError] = useState<string | null>(null);
 
   useEffect(() => {
-    fetch('http://localhost:3001/api/directions')
+    fetch('/api/directions')
       .then(res => res.json())
       .then(data => {
         if (Array.isArray(data)) {

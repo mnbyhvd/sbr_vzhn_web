@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { Box, Typography, Button, useTheme } from '@mui/material';
 import axios from 'axios';
 
-const API_URL = 'http://localhost:3001/api/projects';
+const API_URL = '/api/projects';
 
 interface Project {
   id: number;
@@ -187,7 +187,7 @@ const ProjectsSlider: React.FC = () => {
                   >
                     {project.image ? (
                       <img
-                        src={project.image.startsWith('http') ? project.image : `http://localhost:3001${project.image}`}
+                        src={project.image.startsWith('http') ? project.image : `/api${project.image}`}
                         alt={project.title}
                         style={{ maxWidth: '100%', maxHeight: '100%', objectFit: 'contain', display: 'block' }}
                       />

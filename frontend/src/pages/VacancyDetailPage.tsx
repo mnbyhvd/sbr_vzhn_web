@@ -16,7 +16,7 @@ import {
 } from '@mui/material';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 
-const API_URL = 'http://localhost:3001/api/vacancies';
+const API_URL = '/api/vacancies';
 
 interface Vacancy {
   id: number;

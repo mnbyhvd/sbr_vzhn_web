@@ -3,7 +3,7 @@ import { Box, Container, Typography, Paper, Button, MenuItem, Select, FormContro
 import { Link } from 'react-router-dom';
 import axios from 'axios';
 
-const API_URL = 'http://localhost:3001/api/vacancies';
+const API_URL = '/api/vacancies';
 
 interface Vacancy {
   id: number;
@@ -27,7 +27,7 @@ const VacanciesListPage: React.FC = () => {
   const [categoryError, setCategoryError] = useState<string | null>(null);
 
   useEffect(() => {
-    axios.get('http://localhost:3001/api/vacancies/categories')
+    axios.get('/api/vacancies/categories')
       .then(res => {
         if (Array.isArray(res.data)) {
           setCategories(res.data);

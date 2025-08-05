@@ -10,7 +10,7 @@ import {
 } from '@mui/material';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 
-const API_URL = 'http://localhost:3001/api/vacancies';
+const API_URL = '/api/vacancies';
 
 interface Vacancy {
   id: number;

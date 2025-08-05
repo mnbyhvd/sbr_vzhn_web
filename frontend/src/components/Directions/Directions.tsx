@@ -3,7 +3,7 @@ import { Box, Typography, Paper, Button } from '@mui/material';
 import { Link } from 'react-router-dom';
 import axios from 'axios';
 
-const API_URL = 'http://localhost:3001/api/directions';
+const API_URL = '/api/directions';
 
 interface Direction {
     id: number;

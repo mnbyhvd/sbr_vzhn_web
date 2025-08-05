@@ -13,7 +13,7 @@ import {
 } from '@mui/material';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 
-const API_URL = 'http://localhost:3001/api/projects';
+const API_URL = '/api/projects';
 
 interface Project {
   id: number;
@@ -105,7 +105,7 @@ const ProjectDetailPage: React.FC = () => {
           {project.image && (
             <Box sx={{ width: { xs: '100%', md: 360 }, minWidth: 220, maxWidth: 400, alignSelf: 'flex-start', mb: { xs: 2, md: 0 } }}>
               <img
-                src={project.image.startsWith('http') ? project.image : `http://localhost:3001${project.image}`}
+                src={project.image.startsWith('http') ? project.image : `/api${project.image}`}
                 alt={project.title}
                 style={{ width: '100%', borderRadius: 16, boxShadow: '0 4px 24px rgba(26,89,222,0.10)' }}
               />
@@ -204,7 +204,7 @@ const ProjectDetailPage: React.FC = () => {
           >
             {p.image && (
               <img
-                src={p.image.startsWith('http') ? p.image : `http://localhost:3001${p.image}`}
+                src={p.image.startsWith('http') ? p.image : `/api${p.image}`}
                 alt={p.title}
                 style={{ width: '100%', borderRadius: 8, marginBottom: 8 }}
               />

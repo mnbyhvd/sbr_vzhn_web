@@ -48,7 +48,7 @@ export const ColorProvider: React.FC<ColorProviderProps> = ({ children }) => {
   useEffect(() => {
     const fetchColors = async () => {
       try {
-        const response = await axios.get('http://localhost:3001/api/site-settings');
+        const response = await axios.get('/api/site-settings');
         if (response.data && response.data.colors) {
           const parsedColors = JSON.parse(response.data.colors);
           setColors(parsedColors);

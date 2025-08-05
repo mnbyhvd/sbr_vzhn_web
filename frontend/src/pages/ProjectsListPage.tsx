@@ -6,7 +6,7 @@ import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
 import { Link, useLocation } from 'react-router-dom';
 import axios from 'axios';
 
-const API_URL = 'http://localhost:3001/api/projects';
+const API_URL = '/api/projects';
 
 interface Direction {
   id: number;
@@ -50,7 +50,7 @@ const ProjectsListPage: React.FC = () => {
 
   // Загрузка направлений
   useEffect(() => {
-    axios.get('http://localhost:3001/api/directions').then(res => setDirections(res.data));
+    axios.get('/api/directions').then(res => setDirections(res.data));
   }, []);
 
   // Загрузка проектов с фильтрами
@@ -131,7 +131,7 @@ const ProjectsListPage: React.FC = () => {
               {project.image ? (
                 <Box sx={{ height: 56, display: 'flex', alignItems: 'center', mr: 2, flexShrink: 0 }}>
                   <img
-                    src={project.image.startsWith('http') ? project.image : `http://localhost:3001${project.image}`}
+                    src={project.image.startsWith('http') ? project.image : `/api${project.image}`}
                     alt={project.client}
                     style={{ height: 56, width: 'auto', marginRight: 0, display: 'block', maxWidth: 160 }}
                   />

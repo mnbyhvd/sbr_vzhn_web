@@ -8,7 +8,7 @@ import 'swiper/css';
 import 'swiper/css/navigation';
 import 'swiper/css/pagination';
 
-const API_URL = 'http://localhost:3001/api/team';
+const API_URL = '/api/team';
 
 interface TeamMember {
     id: number;
