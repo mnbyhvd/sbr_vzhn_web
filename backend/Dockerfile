@@ -17,7 +17,10 @@ COPY . .
 RUN npm run build
 
 # Удаляем devDependencies, но оставляем ts-node для seed
-RUN npm prune --production --ignore-scripts
+RUN npm prune --production
+
+# Устанавливаем ts-node для seed данных
+RUN npm install ts-node
 
 # Создаем папку для загрузок
 RUN mkdir -p uploads

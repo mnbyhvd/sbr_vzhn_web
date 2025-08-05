@@ -214,7 +214,6 @@ const ProjectsPage: React.FC = () => {
   // Загрузка направлений
   useEffect(() => {
     getDataWithFallback('/api/directions')
-      .then(res => res.json())
       .then(setDirections);
   }, []);
 
@@ -232,7 +231,7 @@ const ProjectsPage: React.FC = () => {
       }
       if (filterClient) params.append('client', filterClient);
       if (search) params.append('search', search);
-      const response = await safeApiCall('/api/projects?' + params.toString());
+      const data = await getDataWithFallback('/api/projects?' + params.toString());
       console.log('✅ Projects loaded:', data);
       setProjects(data);
       setLoading(false);
