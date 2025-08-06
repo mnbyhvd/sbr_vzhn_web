@@ -17,6 +17,22 @@ router.get('/', async (req: Request, res: Response) => {
   }
 });
 
+// GET partner by ID
+router.get('/:id', async (req: Request, res: Response) => {
+  try {
+    const { id } = req.params;
+    const partner = await prisma.partner.findUnique({
+      where: { id: Number(id) }
+    });
+    if (!partner) {
+      return res.status(404).json({ message: 'Partner not found' });
+    }
+    res.json(partner);
+  } catch (error) {
+    res.status(500).json({ message: 'Error fetching partner', error });
+  }
+});
+
 // POST a new partner
 router.post('/', async (req: Request, res: Response) => {
   const { name, logo, textColor, bgColor } = req.body;

@@ -19,6 +19,22 @@ router.get('/', async (req: Request, res: Response) => {
   }
 });
 
+// GET direction by ID
+router.get('/:id', async (req: Request, res: Response) => {
+  try {
+    const { id } = req.params;
+    const direction = await prisma.direction.findUnique({
+      where: { id: Number(id) }
+    });
+    if (!direction) {
+      return res.status(404).json({ message: 'Direction not found' });
+    }
+    res.json(direction);
+  } catch (error) {
+    res.status(500).json({ message: 'Error fetching direction', error });
+  }
+});
+
 // POST a new direction
 router.post('/', async (req: Request, res: Response) => {
   const { title, description, gridSize, textColor, bgColor } = req.body;
