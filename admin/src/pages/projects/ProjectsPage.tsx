@@ -203,6 +203,7 @@ const ProjectsPage: React.FC = () => {
   const [directions, setDirections] = useState<Direction[]>([]);
   const [filterDirections, setFilterDirections] = useState<Direction[]>([]);
   const [filterClient, setFilterClient] = useState('');
+  const [pendingDirections, setPendingDirections] = useState<string[]>([]);
 
   const sensors = useSensors(
     useSensor(PointerSensor),
@@ -244,8 +245,40 @@ const ProjectsPage: React.FC = () => {
 
   const handleSubmit = async () => {
     try {
-      const directionIds = formData['directionIds'] || [];
-      const payload = { ...formData, directionIds };
+      let finalDirectionIds = [...(formData['directionIds'] || [])];
+      
+      // Создаем новые направления, если они есть
+      if (pendingDirections.length > 0) {
+        console.log('🔄 Creating pending directions:', pendingDirections);
+        
+        for (const directionTitle of pendingDirections) {
+          try {
+            const createdDirection = await safeApiCall('/api/directions', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                title: directionTitle,
+                description: `Описание для направления "${directionTitle}"`,
+                gridSize: 1,
+                textColor: '#222222',
+                bgColor: '#ffffff'
+              }),
+            });
+            
+            if (createdDirection && createdDirection.id) {
+              console.log('✅ Created direction:', createdDirection);
+              finalDirectionIds.push(createdDirection.id);
+            } else {
+              console.error('❌ Failed to create direction:', directionTitle);
+            }
+          } catch (error) {
+            console.error('❌ Error creating direction:', directionTitle, error);
+          }
+        }
+      }
+      
+      const payload = { ...formData, directionIds: finalDirectionIds };
+      
       if (editingProject) {
         await safeApiCall(`/api/projects/${editingProject.id}`, {
           method: 'PUT',
@@ -259,8 +292,10 @@ const ProjectsPage: React.FC = () => {
           body: JSON.stringify(payload),
         });
       }
+      
       setOpenDialog(false);
       setEditingProject(null);
+      setPendingDirections([]);
       setFormData({ 
         title: '', 
         description: '', 
@@ -283,7 +318,12 @@ const ProjectsPage: React.FC = () => {
         feedback: '',
         presentation: '',
       });
+      
+      // Обновляем список проектов и направлений
       fetchProjects();
+      // Обновляем список направлений на случай, если были созданы новые
+      const directionsResponse = await getDataWithFallback('/api/directions');
+      setDirections(directionsResponse);
       setSnackbar({open: true, message: 'Проект сохранён', severity: 'success'});
     } catch (error) {
       console.error('Error saving project:', error);
@@ -489,11 +529,75 @@ const ProjectsPage: React.FC = () => {
           </Box>
           <Autocomplete
             multiple
+            freeSolo
             options={directions}
-            getOptionLabel={option => option.title}
+            getOptionLabel={option => typeof option === 'string' ? option : option.title}
             value={directions.filter(d => (formData.directionIds || []).includes(d.id))}
-            onChange={(_, v) => setFormData({ ...formData, directionIds: v.map(d => d.id) })}
-            renderInput={params => <TextField {...params} label="Направления" margin="dense" />}
+            onChange={async (_, v) => {
+              const newDirectionIds: number[] = [];
+              const newDirections: Direction[] = [];
+              const pendingNewDirections: string[] = [];
+              
+              console.log('🔄 Processing directions:', v);
+              
+              for (const item of v) {
+                if (typeof item === 'string') {
+                  // Проверяем, существует ли уже такое направление
+                  const existingDirection = directions.find(d => d.title === item);
+                  if (existingDirection) {
+                    console.log(`📋 Using existing direction: "${item}" (ID: ${existingDirection.id})`);
+                    newDirectionIds.push(existingDirection.id);
+                  } else {
+                    // Создаем новое направление сразу при вводе
+                    console.log(`📝 Creating new direction: "${item}"`);
+                    try {
+                      const createdDirection = await safeApiCall('/api/directions', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                          title: item,
+                          description: `Описание для направления "${item}"`,
+                          gridSize: 1,
+                          textColor: '#222222',
+                          bgColor: '#ffffff'
+                        }),
+                      });
+                      
+                      if (createdDirection && createdDirection.id) {
+                        console.log('✅ Created direction:', createdDirection);
+                        newDirections.push(createdDirection);
+                        newDirectionIds.push(createdDirection.id);
+                      } else {
+                        console.error('❌ Failed to create direction - no ID returned');
+                        // Если не удалось создать, добавляем в ожидающие
+                        pendingNewDirections.push(item);
+                      }
+                    } catch (error) {
+                      console.error('❌ Error creating direction:', error);
+                      // Если произошла ошибка, добавляем в ожидающие
+                      pendingNewDirections.push(item);
+                    }
+                  }
+                } else {
+                  console.log(`📋 Using existing direction: "${item.title}" (ID: ${item.id})`);
+                  newDirectionIds.push(item.id);
+                }
+              }
+              
+              console.log('📊 Final direction IDs:', newDirectionIds);
+              console.log('📝 Pending directions:', pendingNewDirections);
+              
+              // Обновляем список направлений
+              if (newDirections.length > 0) {
+                setDirections(prev => [...prev, ...newDirections]);
+              }
+              
+              // Сохраняем ожидающие направления
+              setPendingDirections(pendingNewDirections);
+              
+              setFormData({ ...formData, directionIds: newDirectionIds });
+            }}
+            renderInput={params => <TextField {...params} label="Направления (можно ввести новое)" margin="dense" />}
             sx={{ mb: 2 }}
           />
           <TextField

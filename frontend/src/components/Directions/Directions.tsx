@@ -29,20 +29,31 @@ const Directions: React.FC = () => {
     }, []);
 
   return (
-    <Box sx={{ py: 8, background: '#fff' }}>
-      <Button component={Link} to="/" variant="outlined" sx={{ mb: 4, ml: 4 }}>
+    <Box sx={{ py: { xs: 4, md: 8 }, background: '#fff', px: { xs: 2, md: 4 } }}>
+      <Button component={Link} to="/" variant="outlined" sx={{ mb: 4, ml: { xs: 2, md: 4 } }}>
         На главную
       </Button>
-      <Typography variant="h4" component="h2" textAlign="center" gutterBottom sx={{ mb: 6, fontWeight: 700 }}>
+      <Typography 
+        variant="h4" 
+        component="h2" 
+        textAlign="center" 
+        gutterBottom 
+        sx={{ 
+          mb: { xs: 4, md: 6 }, 
+          fontWeight: 700,
+          fontSize: { xs: '1.75rem', md: '2.125rem' },
+          px: { xs: 2, md: 0 }
+        }}
+      >
         Наши направления
       </Typography>
-      <Box display="flex" flexWrap="wrap" mt={3} sx={{ gap: 3, justifyContent: 'center' }}>
+      <Box display="flex" flexWrap="wrap" mt={3} sx={{ gap: { xs: 2, md: 3 }, justifyContent: 'center' }}>
         {directions.map((direction, index) => (
           <Paper
             key={index}
             sx={{
-              width: 320,
-              p: 3,
+              width: { xs: '100%', sm: 280, md: 320 },
+              p: { xs: 2, md: 3 },
               borderRadius: 4,
               boxShadow: '0 4px 24px rgba(0,0,0,0.06)',
               display: 'flex',

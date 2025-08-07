@@ -113,23 +113,33 @@ const VacancyDetailPage: React.FC = () => {
   }
 
   return (
-    <Container sx={{ py: 4, maxWidth: 1100, mx: 'auto' }}>
-      <Button startIcon={<ArrowBackIcon />} component={RouterLink} to="/vacancies" sx={{ mb: 2 }}>
+    <Container sx={{ py: { xs: 2, md: 4 }, maxWidth: 1100, mx: 'auto', px: { xs: 2, md: 3 } }}>
+      <Button startIcon={<ArrowBackIcon />} component={RouterLink} to="/vacancies" sx={{ mb: { xs: 1, md: 2 } }}>
         Все вакансии
       </Button>
-      <Paper elevation={3} sx={{ maxWidth: 900, mx: 'auto', p: { xs: 2, md: 4 }, borderRadius: 4, mb: 4, boxShadow: '0 8px 48px 0 rgba(26,89,222,0.10)' }}>
+      <Paper elevation={3} sx={{ maxWidth: 900, mx: 'auto', p: { xs: 2, md: 4 }, borderRadius: 1, mb: { xs: 3, md: 4 }, boxShadow: '0 8px 48px 0 rgba(26,89,222,0.10)' }}>
         <Box sx={{ display: 'flex', flexDirection: { xs: 'column', md: 'row' }, gap: { xs: 3, md: 6 } }}>
           {/* Левая колонка — ключевые параметры */}
-          <Box sx={{ width: { xs: '100%', md: 320 }, minWidth: 220, maxWidth: 400, alignSelf: 'flex-start', mb: { xs: 2, md: 0 } }}>
-            <Typography variant="h3" component="h1" sx={{ fontWeight: 800, mb: 2, color: 'primary.main', letterSpacing: '-1px' }}>
+          <Box sx={{ width: { xs: '100%', md: 320 }, minWidth: { xs: '100%', md: 220 }, maxWidth: { xs: '100%', md: 400 }, alignSelf: 'flex-start', mb: { xs: 2, md: 0 } }}>
+            <Typography 
+              variant="h3" 
+              component="h1" 
+              sx={{ 
+                fontWeight: 800, 
+                mb: { xs: 1, md: 2 }, 
+                color: 'primary.main', 
+                letterSpacing: '-1px',
+                fontSize: { xs: '1.75rem', md: '2.5rem' }
+              }}
+            >
               {vacancy.title}
             </Typography>
-            <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1, mb: 2 }}>
-              {vacancy.salary && <Chip label={vacancy.salary} color="primary" variant="filled" sx={{ fontSize: 18, fontWeight: 700, px: 2, py: 1 }} />}
-              {vacancy.location && <Chip label={vacancy.location} color="secondary" variant="outlined" />}
-              {vacancy.workFormat && <Chip label={vacancy.workFormat} variant="outlined" />}
-              {vacancy.schedule && <Chip label={vacancy.schedule} variant="outlined" />}
-              {vacancy.category && <Chip label={vacancy.category.name} color="default" variant="outlined" />}
+            <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: { xs: 0.5, md: 1 }, mb: { xs: 1, md: 2 } }}>
+              {vacancy.salary && <Chip label={vacancy.salary} color="primary" variant="filled" sx={{ fontSize: { xs: 14, md: 18 }, fontWeight: 700, px: { xs: 1, md: 2 }, py: { xs: 0.5, md: 1 } }} />}
+              {vacancy.location && <Chip label={vacancy.location} color="secondary" variant="outlined" size="small" />}
+              {vacancy.workFormat && <Chip label={vacancy.workFormat} variant="outlined" size="small" />}
+              {vacancy.schedule && <Chip label={vacancy.schedule} variant="outlined" size="small" />}
+              {vacancy.category && <Chip label={vacancy.category.name} color="default" variant="outlined" size="small" />}
             </Box>
             {vacancy.pdf && (
               <MuiLink href={vacancy.pdf} target="_blank" rel="noopener noreferrer" underline="none">
@@ -204,13 +214,13 @@ const VacancyDetailPage: React.FC = () => {
           </Typography>
         </Box>
         {allVacancies.filter(v => v.id !== vacancy.id).slice(0, 3).map(v => (
-          <Paper
-            key={v.id}
-            elevation={2}
-            sx={{ width: 260, p: 2, borderRadius: 3, cursor: 'pointer', textDecoration: 'none', transition: 'box-shadow 0.2s', '&:hover': { boxShadow: '0 8px 32px rgba(45,91,255,0.12)', background: '#f5faff' } }}
-            component={RouterLink}
-            to={`/vacancies/${v.id}`}
-          >
+                      <Paper
+              key={v.id}
+              elevation={2}
+              sx={{ width: 260, p: 2, borderRadius: 1, cursor: 'pointer', textDecoration: 'none', transition: 'box-shadow 0.2s', '&:hover': { boxShadow: '0 8px 32px rgba(45,91,255,0.12)', background: '#f5faff' } }}
+              component={RouterLink}
+              to={`/vacancies/${v.id}`}
+            >
             <Typography variant="subtitle1" sx={{ fontWeight: 600 }}>{v.title}</Typography>
           </Paper>
         ))}
@@ -224,7 +234,7 @@ const VacancyDetailPage: React.FC = () => {
           sx={{
             background: '#fff',
             boxShadow: '0 8px 48px 0 rgba(26,89,222,0.10)',
-            borderRadius: 4,
+            borderRadius: 1,
             p: { xs: 3, md: 4 },
             maxWidth: 480,
             mx: 'auto',

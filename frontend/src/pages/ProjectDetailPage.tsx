@@ -95,40 +95,66 @@ const ProjectDetailPage: React.FC = () => {
   }
 
   return (
-    <Container sx={{ py: 4, maxWidth: 1200, mx: 'auto' }}>
-      <Button startIcon={<ArrowBackIcon />} component={RouterLink} to="/projects" sx={{ mb: 2 }}>
+    <Container sx={{ py: { xs: 2, md: 4 }, maxWidth: 1200, mx: 'auto', px: { xs: 2, md: 3 } }}>
+      <Button startIcon={<ArrowBackIcon />} component={RouterLink} to="/projects" sx={{ mb: { xs: 1, md: 2 } }}>
         Все проекты
       </Button>
-      <Paper elevation={3} sx={{ maxWidth: 1100, mx: 'auto', p: { xs: 2, md: 4 }, borderRadius: 4, mb: 4, boxShadow: '0 8px 48px 0 rgba(26,89,222,0.10)' }}>
+      <Paper elevation={3} sx={{ maxWidth: 1100, mx: 'auto', p: { xs: 2, md: 4 }, borderRadius: 1, mb: { xs: 3, md: 4 }, boxShadow: '0 8px 48px 0 rgba(26,89,222,0.10)' }}>
         <Box sx={{ display: 'flex', flexDirection: { xs: 'column', md: 'row' }, gap: { xs: 3, md: 6 } }}>
           {/* Картинка */}
           {project.image && (
-            <Box sx={{ width: { xs: '100%', md: 360 }, minWidth: 220, maxWidth: 400, alignSelf: 'flex-start', mb: { xs: 2, md: 0 } }}>
+            <Box sx={{ 
+              width: { xs: '100%', md: 360 }, 
+              minWidth: { xs: '100%', md: 220 }, 
+              maxWidth: { xs: '100%', md: 400 }, 
+              alignSelf: 'flex-start', 
+              mb: { xs: 2, md: 0 },
+              display: 'flex',
+              justifyContent: 'center'
+            }}>
               <img
                 src={project.image.startsWith('http') ? project.image : `/api${project.image}`}
                 alt={project.title}
-                style={{ width: '100%', borderRadius: 16, boxShadow: '0 4px 24px rgba(26,89,222,0.10)' }}
+                style={{ 
+                  width: '100%', 
+                  height: 'auto',
+                  maxWidth: '400px',
+                  borderRadius: 4, 
+                  boxShadow: '0 4px 24px rgba(26,89,222,0.10)',
+                  objectFit: 'contain',
+                  objectPosition: 'center'
+                }}
               />
             </Box>
           )}
           {/* Основная информация */}
           <Box sx={{ flex: 2, minWidth: 0, pl: { md: 4 } }}>
-            <Typography variant="h3" component="h1" sx={{ fontWeight: 800, mb: 2, color: 'primary.main', letterSpacing: '-1px' }}>
+            <Typography 
+              variant="h3" 
+              component="h1" 
+              sx={{ 
+                fontWeight: 800, 
+                mb: { xs: 1, md: 2 }, 
+                color: 'primary.main', 
+                letterSpacing: '-1px',
+                fontSize: { xs: '1.75rem', md: '2.5rem' }
+              }}
+            >
               {project.title}
             </Typography>
-            <Typography variant="subtitle1" sx={{ color: 'text.secondary', mb: 2 }}>{project.description}</Typography>
-            <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1, mb: 3 }}>
-              {project.status && <Chip label={project.status} color="primary" variant="outlined" />}
-              {project.budget && <Chip label={`Бюджет: ${project.budget}`} color="secondary" variant="outlined" />}
-              {project.startDate && <Chip label={`Начало: ${new Date(project.startDate).toLocaleDateString()}`} variant="outlined" />}
-              {project.endDate && <Chip label={`Окончание: ${new Date(project.endDate).toLocaleDateString()}`} variant="outlined" />}
+            <Typography variant="subtitle1" sx={{ color: 'text.secondary', mb: { xs: 1, md: 2 }, fontSize: { xs: '1rem', md: '1.25rem' } }}>{project.description}</Typography>
+            <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: { xs: 0.5, md: 1 }, mb: { xs: 2, md: 3 } }}>
+              {project.status && <Chip label={project.status} color="primary" variant="outlined" size="small" />}
+              {project.budget && <Chip label={`Бюджет: ${project.budget}`} color="secondary" variant="outlined" size="small" />}
+              {project.startDate && <Chip label={`Начало: ${new Date(project.startDate).toLocaleDateString()}`} variant="outlined" size="small" />}
+              {project.endDate && <Chip label={`Окончание: ${new Date(project.endDate).toLocaleDateString()}`} variant="outlined" size="small" />}
             </Box>
-            <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 2, mb: 3 }}>
-              <Typography variant="body1" sx={{ minWidth: 180 }}><b>Клиент:</b> {project.client}</Typography>
-              <Typography variant="body1" sx={{ minWidth: 180 }}><b>Отрасль:</b> {project.industry}</Typography>
-              <Typography variant="body1" sx={{ minWidth: 180 }}><b>Технологии:</b> {project.technologies}</Typography>
-              {project.curator && <Typography variant="body1" sx={{ minWidth: 180 }}><b>Куратор:</b> {project.curator}</Typography>}
-              {project.tools && <Typography variant="body1" sx={{ minWidth: 180 }}><b>Инструменты:</b> {project.tools}</Typography>}
+            <Box sx={{ display: 'flex', flexDirection: { xs: 'column', md: 'row' }, flexWrap: 'wrap', gap: { xs: 1, md: 2 }, mb: { xs: 2, md: 3 } }}>
+              <Typography variant="body1" sx={{ minWidth: { xs: '100%', md: 180 } }}><b>Клиент:</b> {project.client}</Typography>
+              <Typography variant="body1" sx={{ minWidth: { xs: '100%', md: 180 } }}><b>Отрасль:</b> {project.industry}</Typography>
+              <Typography variant="body1" sx={{ minWidth: { xs: '100%', md: 180 } }}><b>Технологии:</b> {project.technologies}</Typography>
+              {project.curator && <Typography variant="body1" sx={{ minWidth: { xs: '100%', md: 180 } }}><b>Куратор:</b> {project.curator}</Typography>}
+              {project.tools && <Typography variant="body1" sx={{ minWidth: { xs: '100%', md: 180 } }}><b>Инструменты:</b> {project.tools}</Typography>}
             </Box>
             {project.presentation && (
               <MuiLink href={project.presentation} target="_blank" rel="noopener noreferrer" underline="none">
@@ -158,11 +184,20 @@ const ProjectDetailPage: React.FC = () => {
           </Box>
         </Box>
         {/* Детали и команда */}
-        <Box sx={{ mt: { xs: 4, md: 6 }, mb: { xs: 4, md: 6 } }}>
-          <Typography variant="h5" component="h2" sx={{ fontWeight: 700, mb: 2, color: 'primary.main' }}>
+        <Box sx={{ mt: { xs: 3, md: 6 }, mb: { xs: 3, md: 6 } }}>
+          <Typography 
+            variant="h5" 
+            component="h2" 
+            sx={{ 
+              fontWeight: 700, 
+              mb: { xs: 1, md: 2 }, 
+              color: 'primary.main',
+              fontSize: { xs: '1.25rem', md: '1.5rem' }
+            }}
+          >
             О проекте
           </Typography>
-          <Typography variant="body1" sx={{ whiteSpace: 'pre-wrap', mb: 2 }}>{project.details}</Typography>
+          <Typography variant="body1" sx={{ whiteSpace: 'pre-wrap', mb: { xs: 1, md: 2 }, fontSize: { xs: '0.9rem', md: '1rem' } }}>{project.details}</Typography>
           {project.team && (
             <Box sx={{ mt: 3 }}>
               <Typography variant="h6" sx={{ fontWeight: 600, mb: 1 }}>Команда проекта:</Typography>
@@ -188,28 +223,51 @@ const ProjectDetailPage: React.FC = () => {
         </Box>
       </Paper>
       {/* Другие проекты */}
-      <Box sx={{ mt: 6, maxWidth: 1100, mx: 'auto', display: 'flex', flexWrap: 'wrap', gap: 3, justifyContent: { xs: 'center', md: 'flex-start' } }}>
+      <Box sx={{ mt: { xs: 4, md: 6 }, maxWidth: 1100, mx: 'auto', display: 'flex', flexWrap: 'wrap', gap: { xs: 2, md: 3 }, justifyContent: { xs: 'center', md: 'flex-start' } }}>
         <Box sx={{ width: '100%' }}>
-          <Typography variant="h5" sx={{ mb: 2, fontWeight: 700, color: 'primary.main' }}>
+          <Typography 
+            variant="h5" 
+            sx={{ 
+              mb: { xs: 1, md: 2 }, 
+              fontWeight: 700, 
+              color: 'primary.main',
+              fontSize: { xs: '1.25rem', md: '1.5rem' }
+            }}
+          >
             Другие проекты
           </Typography>
         </Box>
         {allProjects.filter(p => p.id !== project.id).slice(0, 3).map(p => (
-          <Paper
-            key={p.id}
-            elevation={2}
-            sx={{ width: 260, p: 2, borderRadius: 3, cursor: 'pointer', textDecoration: 'none', transition: 'box-shadow 0.2s', '&:hover': { boxShadow: '0 8px 32px rgba(45,91,255,0.12)', background: '#f5faff' } }}
-            component={RouterLink}
-            to={`/projects/${p.id}`}
-          >
-            {p.image && (
-              <img
-                src={p.image.startsWith('http') ? p.image : `/api${p.image}`}
-                alt={p.title}
-                style={{ width: '100%', borderRadius: 8, marginBottom: 8 }}
-              />
-            )}
-            <Typography variant="subtitle1" sx={{ fontWeight: 600 }}>{p.title}</Typography>
+                      <Paper
+              key={p.id}
+              elevation={2}
+              sx={{ 
+                width: { xs: '100%', sm: 280, md: 260 }, 
+                p: { xs: 1.5, md: 2 }, 
+                borderRadius: 1, 
+                cursor: 'pointer', 
+                textDecoration: 'none', 
+                transition: 'box-shadow 0.2s', 
+                '&:hover': { boxShadow: '0 8px 32px rgba(45,91,255,0.12)', background: '#f5faff' } 
+              }}
+              component={RouterLink}
+              to={`/projects/${p.id}`}
+            >
+              {p.image && (
+                <img
+                  src={p.image.startsWith('http') ? p.image : `/api${p.image}`}
+                  alt={p.title}
+                  style={{ 
+                    width: '100%', 
+                    height: 'auto',
+                    borderRadius: 2, 
+                    marginBottom: 8,
+                    objectFit: 'contain',
+                    objectPosition: 'center'
+                  }}
+                />
+              )}
+            <Typography variant="subtitle1" sx={{ fontWeight: 600, fontSize: { xs: '0.9rem', md: '1rem' } }}>{p.title}</Typography>
           </Paper>
         ))}
       </Box>

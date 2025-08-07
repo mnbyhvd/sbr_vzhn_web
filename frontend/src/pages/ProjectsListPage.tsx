@@ -65,18 +65,24 @@ const ProjectsListPage: React.FC = () => {
   }, [filterDirections, filterClient, search]);
 
   return (
-    <Box sx={{ py: 8, background: '#fff' }}>
+    <Box sx={{ py: { xs: 4, md: 8 }, background: '#fff', px: { xs: 2, md: 0 } }}>
       <Container>
-        <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 4, mt: 4, flexWrap: 'wrap', gap: 2 }}>
-          <Typography variant="h2" sx={{ fontWeight: 700 }}>
+        <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: { xs: 3, md: 4 }, mt: { xs: 2, md: 4 }, flexWrap: 'wrap', gap: 2 }}>
+          <Typography 
+            variant="h2" 
+            sx={{ 
+              fontWeight: 700,
+              fontSize: { xs: '1.75rem', md: '2.5rem' }
+            }}
+          >
             Все проекты
           </Typography>
-          <Button component={Link} to="/" variant="outlined" sx={{ borderRadius: 999, px: 3 }}>
+          <Button component={Link} to="/" variant="outlined" sx={{ borderRadius: 999, px: { xs: 2, md: 3 } }}>
             На главную
           </Button>
         </Box>
         {/* Фильтры */}
-        <Box sx={{ display: 'flex', gap: 2, mb: 4, flexWrap: 'wrap' }}>
+        <Box sx={{ display: 'flex', gap: { xs: 1, md: 2 }, mb: { xs: 3, md: 4 }, flexWrap: 'wrap' }}>
           <Autocomplete
             multiple
             options={directions}
@@ -84,38 +90,38 @@ const ProjectsListPage: React.FC = () => {
             value={filterDirections}
             onChange={(_, v) => setFilterDirections(v)}
             renderInput={params => <TextField {...params} label="Фильтр по направлениям" size="small" />}
-            sx={{ flex: 1, minWidth: 180, maxWidth: 400 }}
+            sx={{ flex: 1, minWidth: { xs: '100%', sm: 180 }, maxWidth: 400 }}
           />
           <TextField
             label="Фильтр по клиенту"
             value={filterClient}
             onChange={e => setFilterClient(e.target.value)}
             size="small"
-            sx={{ flex: 1, minWidth: 180, maxWidth: 400 }}
+            sx={{ flex: 1, minWidth: { xs: '100%', sm: 180 }, maxWidth: 400 }}
           />
           <TextField
             placeholder="Поиск по всем полям..."
             value={search}
             onChange={e => setSearch(e.target.value)}
             size="small"
-            sx={{ flex: 1, minWidth: 180, maxWidth: 400 }}
+            sx={{ flex: 1, minWidth: { xs: '100%', sm: 180 }, maxWidth: 400 }}
             InputProps={{
               startAdornment: <InputAdornment position="start">🔍</InputAdornment>,
             }}
           />
         </Box>
-        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3, mt: 2 }}>
+        <Box sx={{ display: 'flex', flexDirection: 'column', gap: { xs: 2, md: 3 }, mt: 2 }}>
           {projects.map((project) => (
             <Paper
               key={project.id}
               component={Link}
               to={`/projects/${project.id}`}
               sx={{
-                p: 3,
+                p: { xs: 2, md: 3 },
                 display: 'flex',
                 alignItems: 'center',
-                gap: 3,
-                borderRadius: 3,
+                gap: { xs: 2, md: 3 },
+                borderRadius: 1,
                 boxShadow: '0 2px 12px rgba(45,91,255,0.06)',
                 textDecoration: 'none',
                 color: 'inherit',
@@ -129,15 +135,36 @@ const ProjectsListPage: React.FC = () => {
             >
               {/* Логотип клиента */}
               {project.image ? (
-                <Box sx={{ height: 56, display: 'flex', alignItems: 'center', mr: 2, flexShrink: 0 }}>
+                <Box sx={{ 
+                  height: { xs: 48, md: 56 }, 
+                  display: 'flex', 
+                  alignItems: 'center', 
+                  mr: { xs: 1, md: 2 }, 
+                  flexShrink: 0,
+                  minWidth: { xs: 48, md: 56 }
+                }}>
                   <img
                     src={project.image.startsWith('http') ? project.image : `/api${project.image}`}
                     alt={project.client}
-                    style={{ height: 56, width: 'auto', marginRight: 0, display: 'block', maxWidth: 160 }}
+                    style={{ 
+                      height: '100%', 
+                      width: 'auto', 
+                      maxWidth: '160px',
+                      objectFit: 'contain',
+                      objectPosition: 'center'
+                    }}
                   />
                 </Box>
               ) : (
-                <Avatar sx={{ width: 56, height: 56, mr: 2, flexShrink: 0, bgcolor: '#e0e0e0', color: '#222', fontWeight: 700 }} variant="rounded">
+                <Avatar sx={{ 
+                  width: { xs: 48, md: 56 }, 
+                  height: { xs: 48, md: 56 }, 
+                  mr: { xs: 1, md: 2 }, 
+                  flexShrink: 0, 
+                  bgcolor: '#e0e0e0', 
+                  color: '#222', 
+                  fontWeight: 700 
+                }} variant="rounded">
                   {project.client?.charAt(0).toUpperCase() || '?'}
                 </Avatar>
               )}
@@ -145,16 +172,22 @@ const ProjectsListPage: React.FC = () => {
                 <Typography variant="h6" sx={{ fontWeight: 700, mb: 0.5 }}>{project.title}</Typography>
                 <Typography variant="body2" sx={{ color: 'text.secondary', mb: 1 }}>{project.description}</Typography>
                 {project.directions && project.directions.length > 0 && (
-                  <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap', mb: 1 }}>
-                    {project.directions.map(dir => (
-                      <Chip key={dir.id} label={dir.title} size="small" color="primary" />
-                    ))}
-                  </Box>
-                )}
-                <Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap', color: 'text.secondary', fontSize: 15 }}>
-                  <span>Клиент: <b>{project.client}</b></span>
-                  <span>Отрасль: <b>{project.industry}</b></span>
+                                  <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap', mb: 1 }}>
+                  {project.directions.map(dir => (
+                    <Chip key={dir.id} label={dir.title} size="small" color="primary" />
+                  ))}
                 </Box>
+              )}
+              <Box sx={{ 
+                display: { xs: 'none', md: 'flex' }, 
+                gap: 2, 
+                flexWrap: 'wrap', 
+                color: 'text.secondary', 
+                fontSize: 15 
+              }}>
+                <span>Клиент: <b>{project.client}</b></span>
+                <span>Отрасль: <b>{project.industry}</b></span>
+              </Box>
               </Box>
             </Paper>
           ))}

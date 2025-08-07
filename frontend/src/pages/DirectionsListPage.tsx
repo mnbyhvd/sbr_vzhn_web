@@ -91,41 +91,45 @@ const DirectionsListPage: React.FC = () => {
 
       <Box
         sx={{
-          display: 'grid',
-          gridTemplateColumns: { xs: '1fr', md: 'repeat(12, 1fr)' },
-          gap: 3,
+          display: 'flex',
+          flexDirection: 'column',
+          gap: 2,
         }}
       >
         {safeDirections.map((direction) => (
           <Box
             key={direction.id}
+            component={RouterLink}
+            to={`/projects?directionId=${direction.id}`}
             sx={{
-              gridColumn: { xs: 'span 12', md: direction.gridSize === 2 ? 'span 8' : 'span 4' },
+              textDecoration: 'none',
+              display: 'block',
+              width: '100%',
             }}
           >
-            <Box component={RouterLink} to={`/projects?directionId=${direction.id}`} sx={{ textDecoration: 'none', display: 'block', height: '100%' }}>
               <Card
                 sx={{
-                  height: '100%',
                   background: direction.bgColor,
                   color: direction.textColor,
-                  borderRadius: 3,
+                  borderRadius: 1,
                   boxShadow: '0 4px 20px rgba(0,0,0,0.1)',
                   transition: 'all 0.3s ease',
                   cursor: 'pointer',
                   '&:hover': {
-                    transform: 'translateY(-4px)',
+                  transform: 'translateY(-2px)',
                     boxShadow: '0 8px 30px rgba(0,0,0,0.15)',
                   },
                 }}
               >
-                <CardContent sx={{ p: { xs: 3, md: 4 }, height: '100%', display: 'flex', flexDirection: 'column' }}>
+              <CardContent sx={{ p: { xs: 3, md: 4 } }}>
+                <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                  <Box sx={{ flex: 1 }}>
                   <Typography
                     variant="h5"
                     component="h3"
                     sx={{
                       fontWeight: 700,
-                      mb: 2,
+                        mb: 1,
                       fontSize: { xs: 20, md: 24 },
                       lineHeight: 1.2,
                     }}
@@ -137,15 +141,26 @@ const DirectionsListPage: React.FC = () => {
                     sx={{
                       fontSize: { xs: 14, md: 16 },
                       lineHeight: 1.6,
-                      flex: 1,
                       opacity: 0.9,
                     }}
                   >
                     {direction.description}
                   </Typography>
+                  </Box>
+                  <Box sx={{ ml: 2, display: { xs: 'none', md: 'block' } }}>
+                    <Typography
+                      variant="body2"
+                      sx={{
+                        opacity: 0.7,
+                        fontSize: 14,
+                      }}
+                    >
+                      →
+                    </Typography>
+                  </Box>
+                </Box>
                 </CardContent>
               </Card>
-            </Box>
           </Box>
         ))}
       </Box>

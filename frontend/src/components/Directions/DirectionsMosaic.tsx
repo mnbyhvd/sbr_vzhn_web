@@ -25,7 +25,8 @@ const DirectionsMosaic: React.FC = () => {
     const fetchDirections = async () => {
       try {
         const response = await axios.get('/api/directions');
-        setDirections(response.data);
+        // Берем только первые 5 направлений для главной страницы
+        setDirections(response.data.slice(0, 5));
       } catch (error) {
         console.error('Ошибка загрузки направлений:', error);
       } finally {

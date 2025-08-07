@@ -42,9 +42,7 @@ const ProjectsSlider: React.FC = () => {
       position: 'absolute' as const,
       top: 0,
       left: '50%',
-      transition: isCenter
-        ? 'all 0.7s cubic-bezier(.4,1.2,.6,1)'
-        : 'all 0.7s cubic-bezier(.4,1.2,.6,1)', // одинаково плавно для входа и выхода
+      transition: 'all 0.8s cubic-bezier(0.4, 0, 0.2, 1)', // Более плавная анимация
       borderRadius: '44px',
       background: '#fff',
       display: 'flex',
@@ -57,7 +55,7 @@ const ProjectsSlider: React.FC = () => {
         isCenter
           ? '0 14px 56px 0 rgba(26,89,222,0.18)'
           : '0 12px 48px 0 rgba(26,89,222,0.18)',
-      opacity: isCenter ? 1 : 0.85,
+      opacity: isCenter ? 1 : 0.7, // Уменьшил прозрачность для неактивных карточек
       zIndex: isCenter ? 3 : 2 - Math.abs(pos),
       cursor: isCenter ? 'default' : 'pointer',
     };
@@ -129,9 +127,13 @@ const ProjectsSlider: React.FC = () => {
 
   // Wheel для десктопа (горизонтальный скролл)
   const handleWheel = (e: React.WheelEvent) => {
+    e.preventDefault(); // Предотвращаем вертикальный скролл
     if (Math.abs(e.deltaX) > 20) {
-      if (e.deltaX > 0) setIndex((prev) => (prev + 1) % total);
-      else setIndex((prev) => (prev - 1 + total) % total);
+      if (e.deltaX > 0) {
+        setIndex((prev) => (prev + 1) % total);
+      } else {
+        setIndex((prev) => (prev - 1 + total) % total);
+      }
     }
   };
 
@@ -198,15 +200,16 @@ const ProjectsSlider: React.FC = () => {
                   <Typography variant="h5" sx={{ fontWeight: 800, mb: 2, fontSize: pos === 0 ? 26 : 18, color: 'primary.main', textAlign: 'center' }}>{project.title}</Typography>
                   <Typography variant="body1" sx={{ color: '#0D2C75', fontWeight: 500, fontSize: { xs: 16, md: 18 }, mb: 2, textAlign: 'center', maxWidth: 400 }}>{project.description}</Typography>
                 </Box>
+                {pos === 0 && (
                 <Button
-                  variant={pos === 0 ? 'contained' : 'outlined'}
+                    variant="contained"
                   color="primary"
                   size="large"
-                  sx={{ mt: 2, borderRadius: 999, fontWeight: 700, fontSize: 16, px: 4, opacity: pos === 0 ? 1 : 0.5, pointerEvents: pos === 0 ? 'auto' : 'none', width: '100%' }}
-                  disabled={pos !== 0}
+                    sx={{ mt: 2, borderRadius: 999, fontWeight: 700, fontSize: 16, px: 4, width: '100%' }}
                 >
                   Подробнее
                 </Button>
+                )}
               </Box>
             );
           })}

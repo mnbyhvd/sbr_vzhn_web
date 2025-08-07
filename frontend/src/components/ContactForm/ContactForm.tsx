@@ -57,7 +57,7 @@ const ContactForm: React.FC = () => {
       sx={{
         maxWidth: 1100,
         mx: 'auto',
-        mt: 0,
+        mt: { xs: 8, md: 12 }, // Увеличили верхний отступ
         mb: { xs: 6, md: 10 },
         borderRadius: { xs: '24px', md: '40px' },
         background: '#fff',

@@ -29,29 +29,46 @@ const navLinks = [
 const Logo = () => (
   <Box sx={{ display: 'flex', alignItems: 'center', mr: 3 }}>
     <Box
+      component={RouterLink}
+      to="/"
       sx={{
-        width: 40,
-        height: 40,
-        borderRadius: '50%',
-        background: 'linear-gradient(135deg, #1A59DE 60%, #A4C2E8 100%)',
         display: 'flex',
         alignItems: 'center',
-        justifyContent: 'center',
-        mr: 1,
+        textDecoration: 'none',
+        height: 32, // Уменьшили высоту
+        maxWidth: '100%',
+        transition: 'opacity 0.2s',
+        '&:hover': {
+          opacity: 0.8,
+        },
       }}
     >
-      <Typography variant="h6" sx={{ color: '#fff', fontWeight: 700, letterSpacing: 1 }}>
-        СВ
-      </Typography>
+      <img
+        src="/logo1.png"
+        alt="СайберВижн"
+        style={{
+          height: '100%',
+          width: 'auto',
+          maxWidth: '120px', // Уменьшили максимальную ширину
+          objectFit: 'contain',
+          border: 'none',
+          outline: 'none',
+        }}
+      />
     </Box>
     <Typography
       variant="h6"
-      sx={{ color: 'primary.main', fontWeight: 700, letterSpacing: 1 }}
+      sx={{ 
+        color: 'primary.main', 
+        fontWeight: 700, 
+        letterSpacing: 1,
+        ml: 2, // Добавили отступ между лого и текстом
+      }}
       component={RouterLink}
       to="/"
       style={{ textDecoration: 'none' }}
     >
-      СайберВижн
+      saybervizhn
     </Typography>
   </Box>
 );
@@ -68,15 +85,10 @@ const Header: React.FC = () => {
   const backgroundColor = isHomePage ? colors.background : theme.palette.background.default;
 
   const navBlock = (
-    <Paper
-      elevation={3}
+    <Box
       sx={{
         display: 'flex',
-        borderRadius: 999,
-        background: backgroundColor,
-        px: 2,
-        py: 0.5,
-        gap: 1,
+        gap: 3,
         alignItems: 'center',
       }}
     >
@@ -88,19 +100,22 @@ const Header: React.FC = () => {
           sx={{
             color: location.pathname === link.to ? primaryColor : theme.palette.text.primary,
             fontWeight: location.pathname === link.to ? 700 : 500,
-            borderRadius: 999,
-            px: 2,
-            background: location.pathname === link.to ? `${primaryColor}15` : 'transparent',
-            transition: 'all 0.2s',
+            textTransform: 'none',
+            fontSize: 16,
+            px: 0,
+            py: 1,
+            background: 'transparent',
+            transition: 'color 0.2s',
             '&:hover': {
-              background: `${primaryColor}20`,
+              background: 'transparent',
+              color: primaryColor,
             },
           }}
         >
               {link.label}
             </Button>
           ))}
-    </Paper>
+    </Box>
   );
 
   return (
@@ -110,20 +125,35 @@ const Header: React.FC = () => {
       sx={{
         background: 'rgba(255,255,255,0.95)',
         color: 'text.primary',
-        boxShadow: '0 2px 12px 0 rgba(26,89,222,0.04)',
-        borderBottom: '1px solid #E3EAF6',
-        zIndex: theme.zIndex.drawer + 1,
+        boxShadow: 'none',
+        borderBottom: 'none',
+        zIndex: 1000, // Фиксированный z-index
       }}
     >
-      <Toolbar sx={{ justifyContent: 'space-between', minHeight: 72 }}>
+      <Toolbar sx={{ justifyContent: 'space-between', minHeight: 72, px: { xs: 3, md: 6 } }}>
         <Logo />
         {isMobile ? (
           <>
             <IconButton onClick={() => setDrawerOpen(true)}>
               <MenuIcon sx={{ color: 'primary.main' }} />
           </IconButton>
-            <Drawer anchor="right" open={drawerOpen} onClose={() => setDrawerOpen(false)}>
-              <Box sx={{ width: 260, p: 2 }}>
+            <Drawer 
+              anchor="right" 
+              open={drawerOpen} 
+              onClose={() => setDrawerOpen(false)}
+              sx={{
+                zIndex: 9999, // Максимальный z-index для всего Drawer
+                '& .MuiDrawer-paper': {
+                  zIndex: 9999, // Максимальный z-index для бумаги
+                  width: 260,
+                  position: 'fixed',
+                  top: 0,
+                  right: 0,
+                  height: '100vh',
+                },
+              }}
+            >
+              <Box sx={{ width: 260, p: 2, pt: 4 }}>
               {navLinks.map(link => (
                   <List key={link.to}>
                     <ListItem disablePadding>
@@ -132,8 +162,26 @@ const Header: React.FC = () => {
                         to={link.to}
                         selected={location.pathname === link.to}
                         onClick={() => setDrawerOpen(false)}
+                        sx={{
+                          borderRadius: 1,
+                          mb: 0.5,
+                          '&.Mui-selected': {
+                            backgroundColor: `${primaryColor}15`,
+                            color: primaryColor,
+                          },
+                          '&:hover': {
+                            backgroundColor: `${primaryColor}10`,
+                          },
+                        }}
                       >
-                    <ListItemText primary={link.label} />
+                        <ListItemText 
+                          primary={link.label} 
+                          sx={{
+                            '& .MuiListItemText-primary': {
+                              fontWeight: location.pathname === link.to ? 600 : 400,
+                            },
+                          }}
+                        />
                   </ListItemButton>
                 </ListItem>
             </List>

@@ -17,7 +17,17 @@ const app = express();
 const port = process.env.PORT || 3000;
 
 app.use(cors({
-  origin: ['http://localhost:8080', 'http://localhost', 'http://localhost:3000'],
+  origin: [
+    'http://localhost:8080', 
+    'http://localhost', 
+    'http://localhost:3000',
+    'https://new.saybervizhn.ru',
+    'https://admin.saybervizhn.ru',
+    'https://saybervizhn.ru',
+    'http://new.saybervizhn.ru',
+    'http://admin.saybervizhn.ru',
+    'http://saybervizhn.ru'
+  ],
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization']

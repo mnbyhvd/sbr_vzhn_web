@@ -67,16 +67,31 @@ const VacanciesListPage: React.FC = () => {
   const safeCategories = Array.isArray(categories) ? categories : [];
 
   return (
-    <Box sx={{ py: 12, background: '#fff' }}>
-      <Container maxWidth={false} sx={{ px: { xs: 1, sm: 4, md: 8 } }}>
-        <Box sx={{ display: 'flex', alignItems: 'center', gap: 3, mb: 4 }}>
-          <Button component={Link} to="/" variant="outlined">
+    <Box sx={{ py: { xs: 4, md: 12 }, background: '#fff', px: { xs: 2, md: 0 } }}>
+      <Container maxWidth={false} sx={{ px: { xs: 2, sm: 4, md: 8 } }}>
+        <Box sx={{ 
+          display: 'flex', 
+          flexDirection: { xs: 'column', md: 'row' },
+          alignItems: { xs: 'stretch', md: 'center' }, 
+          gap: { xs: 2, md: 3 }, 
+          mb: { xs: 3, md: 4 } 
+        }}>
+          <Button component={Link} to="/" variant="outlined" sx={{ alignSelf: { xs: 'center', md: 'flex-start' } }}>
             На главную
           </Button>
-          <Typography variant="h2" sx={{ fontWeight: 700, flex: 1, textAlign: 'center', m: 0 }}>
+          <Typography 
+            variant="h2" 
+            sx={{ 
+              fontWeight: 700, 
+              flex: 1, 
+              textAlign: 'center', 
+              m: 0,
+              fontSize: { xs: '1.75rem', md: '2.5rem' }
+            }}
+          >
             Вакансии
           </Typography>
-          <FormControl sx={{ minWidth: 220 }}>
+          <FormControl sx={{ minWidth: { xs: '100%', md: 220 } }}>
             <InputLabel id="category-label">Категория</InputLabel>
             <Select
               labelId="category-label"
@@ -97,19 +112,19 @@ const VacanciesListPage: React.FC = () => {
         {categoryError && (
           <Alert severity="error" sx={{ mb: 2 }}>{categoryError}</Alert>
         )}
-        <Box display="flex" flexDirection="column" gap={3}>
+        <Box display="flex" flexDirection="column" gap={{ xs: 2, md: 3 }}>
           {safeVacancies.map((vacancy, idx) => (
             <Paper
               key={vacancy.id}
               elevation={2}
               sx={{
                 width: '100%',
-                borderRadius: 3,
-                p: 2,
+                borderRadius: 1,
+                p: { xs: 1.5, md: 2 },
                 boxShadow: '0 2px 12px rgba(0,0,0,0.04)',
                 display: 'flex',
                 alignItems: 'flex-start',
-                gap: 2,
+                gap: { xs: 1, md: 2 },
                 transition: 'box-shadow 0.2s',
                 '&:hover': { boxShadow: '0 8px 32px rgba(45,91,255,0.12)', background: '#f7faff' },
                 cursor: 'pointer',
@@ -121,8 +136,18 @@ const VacanciesListPage: React.FC = () => {
               component={Link}
               to={`/vacancies/${vacancy.id}`}
             >
-              <Box sx={{ flex: 1, minWidth: 0, textAlign: 'left', pl: 3 }}>
-                <Typography variant="h6" sx={{ fontWeight: 600, mb: 0.5, textAlign: 'left' }}>{vacancy.title}</Typography>
+              <Box sx={{ flex: 1, minWidth: 0, textAlign: 'left', pl: { xs: 1, md: 3 } }}>
+                <Typography 
+                  variant="h6" 
+                  sx={{ 
+                    fontWeight: 600, 
+                    mb: 0.5, 
+                    textAlign: 'left',
+                    fontSize: { xs: '1rem', md: '1.25rem' }
+                  }}
+                >
+                  {vacancy.title}
+                </Typography>
                 {vacancy.category?.name && (
                   <Typography variant="caption" sx={{ color: 'primary.main', fontWeight: 500, mr: 2, textAlign: 'left' }}>
                     {vacancy.category.name}
@@ -133,9 +158,39 @@ const VacanciesListPage: React.FC = () => {
                     {new Date(vacancy.createdAt).toLocaleDateString()}
                   </Typography>
                 )}
-                <Typography variant="body2" sx={{ color: 'text.secondary', mt: 0.5, mb: 0.5, textAlign: 'left' }}>{vacancy.description}</Typography>
-                <Typography variant="subtitle2" sx={{ fontWeight: 500, mt: 0.5, textAlign: 'left' }}>Требования:</Typography>
-                <Typography variant="body2" sx={{ color: 'text.secondary', textAlign: 'left' }}>{vacancy.requirements}</Typography>
+                <Typography 
+                  variant="body2" 
+                  sx={{ 
+                    color: 'text.secondary', 
+                    mt: 0.5, 
+                    mb: 0.5, 
+                    textAlign: 'left',
+                    fontSize: { xs: '0.8rem', md: '0.875rem' }
+                  }}
+                >
+                  {vacancy.description}
+                </Typography>
+                <Typography 
+                  variant="subtitle2" 
+                  sx={{ 
+                    fontWeight: 500, 
+                    mt: 0.5, 
+                    textAlign: 'left',
+                    fontSize: { xs: '0.8rem', md: '0.875rem' }
+                  }}
+                >
+                  Требования:
+                </Typography>
+                <Typography 
+                  variant="body2" 
+                  sx={{ 
+                    color: 'text.secondary', 
+                    textAlign: 'left',
+                    fontSize: { xs: '0.8rem', md: '0.875rem' }
+                  }}
+                >
+                  {vacancy.requirements}
+                </Typography>
               </Box>
             </Paper>
           ))}

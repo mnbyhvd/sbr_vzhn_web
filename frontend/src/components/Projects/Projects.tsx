@@ -33,7 +33,8 @@ const Projects: React.FC = () => {
     <Box sx={{
       position: 'relative',
       overflow: 'hidden',
-      py: 8,
+      py: { xs: 4, md: 8 },
+      px: { xs: 2, md: 0 },
       backgroundImage: `linear-gradient(120deg, #2D5BFF 0%, #E5E8F0 60%, #fff 100%)`,
       backgroundSize: 'cover',
       backgroundPosition: 'center',
@@ -51,18 +52,28 @@ const Projects: React.FC = () => {
         }}
       />
       <Container sx={{ position: 'relative', zIndex: 2 }}>
-        <Typography variant="h2" sx={{ fontWeight: 700, mb: 4, textAlign: 'center', fontFamily: 'Inter, Montserrat, Roboto, Arial, sans-serif' }}>
+        <Typography 
+          variant="h2" 
+          sx={{ 
+            fontWeight: 700, 
+            mb: { xs: 3, md: 4 }, 
+            textAlign: 'center', 
+            fontFamily: 'Inter, Montserrat, Roboto, Arial, sans-serif',
+            fontSize: { xs: '1.75rem', md: '2.5rem' },
+            px: { xs: 2, md: 0 }
+          }}
+        >
           Наши проекты
         </Typography>
-        <Box display="flex" flexWrap="wrap" gap={4} justifyContent="center">
+        <Box display="flex" flexWrap="wrap" gap={{ xs: 2, md: 4 }} justifyContent="center">
           {sortedProjects.map((project) => (
             <Paper
               key={project.id}
               elevation={3}
               sx={{
-                width: 340,
+                width: { xs: '100%', sm: 300, md: 340 },
                 borderRadius: 4,
-                p: 3,
+                p: { xs: 2, md: 3 },
                 boxShadow: '0 4px 24px rgba(0,0,0,0.06)',
                 display: 'flex',
                 flexDirection: 'column',

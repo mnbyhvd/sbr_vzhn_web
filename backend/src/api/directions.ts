@@ -42,6 +42,12 @@ router.post('/', async (req: Request, res: Response) => {
     return res.status(400).json({ message: 'Title, description and gridSize are required' });
   }
   try {
+    // Получаем максимальный порядок и добавляем 1
+    const maxOrder = await prisma.direction.aggregate({
+      _max: { order: true }
+    });
+    const nextOrder = (maxOrder._max.order || 0) + 1;
+
     const newDirection = await prisma.direction.create({
       data: {
     title,
@@ -49,6 +55,7 @@ router.post('/', async (req: Request, res: Response) => {
     gridSize: Number(gridSize),
     textColor: textColor || '#222222',
         bgColor: bgColor || '#ffffff',
+        order: nextOrder,
       },
     });
   res.status(201).json(newDirection);
