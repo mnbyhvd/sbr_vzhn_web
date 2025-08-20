@@ -25,11 +25,9 @@ import {
   InputAdornment,
   Tooltip,
   MenuItem,
-  Autocomplete,
-  Badge
+  Autocomplete
 } from '@mui/material';
 import { Add as AddIcon, Edit as EditIcon, Delete as DeleteIcon, Work as WorkIcon } from '@mui/icons-material';
-import VisibilityIcon from '@mui/icons-material/Visibility';
 import {
   DndContext,
   closestCenter,
@@ -60,7 +58,6 @@ interface Vacancy {
   createdAt?: string;
   categoryId?: number; // Added categoryId
   category?: VacancyCategory; // Added category
-  responses?: VacancyResponse[]; // Added responses
   // Новые опциональные поля
   salary?: string;
   location?: string;
@@ -83,16 +80,7 @@ interface VacancyCategory {
   name: string;
 }
 
-interface VacancyResponse {
-  id: number;
-  name: string;
-  email: string;
-  phone: string;
-  message: string;
-  createdAt: string;
-}
-
-const SortableItem: React.FC<{ vacancy: Vacancy; onEdit: (v: Vacancy) => void; onDelete: (id: number) => void; onShowResponses: (v: Vacancy) => void }> = ({ vacancy, onEdit, onDelete, onShowResponses }) => {
+const SortableItem: React.FC<{ vacancy: Vacancy; onEdit: (v: Vacancy) => void; onDelete: (id: number) => void; }> = ({ vacancy, onEdit, onDelete }) => {
   const {
     attributes,
     listeners,
@@ -181,11 +169,6 @@ const SortableItem: React.FC<{ vacancy: Vacancy; onEdit: (v: Vacancy) => void; o
         >
           <DeleteIcon />
         </IconButton>
-        <Badge badgeContent={vacancy.responses?.length || 0} color="primary" sx={{ mr: 2 }}>
-          <IconButton edge="end" aria-label="responses" onClick={() => onShowResponses(vacancy)}>
-            <VisibilityIcon />
-          </IconButton>
-        </Badge>
       </ListItemSecondaryAction>
     </ListItem>
   );
@@ -222,9 +205,6 @@ const VacanciesPage: React.FC = () => {
   const [deleting, setDeleting] = useState<Vacancy | null>(null);
   const [loading, setLoading] = useState(false);
   const [categories, setCategories] = useState<VacancyCategory[]>([]);
-  const [openResponses, setOpenResponses] = useState(false);
-  const [responses, setResponses] = useState<VacancyResponse[]>([]);
-  const [responsesVacancy, setResponsesVacancy] = useState<Vacancy | null>(null);
   const [vacancyError, setVacancyError] = useState<string | null>(null);
   const [categoryError, setCategoryError] = useState<string | null>(null);
 
@@ -241,13 +221,11 @@ const VacanciesPage: React.FC = () => {
   }, []);
 
   const fetchVacancies = async () => {
-    console.log('🔄 Fetching vacancies...');
     setLoading(true);
     try {
       const data = await getDataWithFallback('/api/vacancies');
       if (Array.isArray(data)) {
-        console.log('✅ Vacancies loaded:', data);
-      setVacancies(data);
+        setVacancies(data);
         setVacancyError(null);
       } else {
         setVacancies([]);
@@ -262,12 +240,10 @@ const VacanciesPage: React.FC = () => {
   };
 
   const fetchCategories = async () => {
-    console.log('🔄 Fetching categories...');
     try {
       const data = await getDataWithFallback('/api/vacancies/categories');
       if (Array.isArray(data)) {
-        console.log('✅ Categories loaded:', data);
-      setCategories(data);
+        setCategories(data);
         setCategoryError(null);
       } else {
         setCategories([]);
@@ -300,7 +276,6 @@ const VacanciesPage: React.FC = () => {
       fetchVacancies();
       setSnackbar({open: true, message: 'Вакансия сохранена', severity: 'success'});
     } catch (error) {
-      console.error('Error saving vacancy:', error);
       setSnackbar({open: true, message: 'Ошибка сохранения', severity: 'error'});
     }
   };
@@ -359,7 +334,6 @@ const VacanciesPage: React.FC = () => {
 
         const newItems = arrayMove(items, oldIndex, newIndex);
 
-        // Обновляем порядок в базе данных
         newItems.forEach(async (item, index) => {
           try {
             await safeApiCall(`/api/vacancies/${item.id}`, {
@@ -368,7 +342,6 @@ const VacanciesPage: React.FC = () => {
               body: JSON.stringify({ ...item, order: index }),
             });
           } catch (error) {
-            console.error('Error updating order:', error);
             setSnackbar({open: true, message: 'Ошибка обновления порядка', severity: 'error'});
           }
         });
@@ -378,24 +351,8 @@ const VacanciesPage: React.FC = () => {
     }
   };
 
-  const handleOpenResponses = async (vacancy: Vacancy) => {
-    setResponsesVacancy(vacancy);
-    const res = await safeApiCall(`/api/vacancies/${vacancy.id}/responses`);
-    const data = await res.json();
-    setResponses(data);
-    setOpenResponses(true);
-  };
-  const handleCloseResponses = () => {
-    setOpenResponses(false);
-    setResponsesVacancy(null);
-    setResponses([]);
-  };
-
-  // Фильтрация по поиску
   const safeVacancies = Array.isArray(vacancies) ? vacancies : [];
   const filteredVacancies = safeVacancies.filter(v => v.title.toLowerCase().includes(search.toLowerCase()) || v.description.toLowerCase().includes(search.toLowerCase()));
-
-  const onShowResponses = handleOpenResponses;
 
   return (
     <Box sx={{ width: '100%', px: { xs: 2, md: 4 }, py: 3 }}>
@@ -412,7 +369,6 @@ const VacanciesPage: React.FC = () => {
         </Button>
       </Box>
 
-      {/* Поиск */}
       <TextField
         placeholder="Поиск по названию или описанию..."
         value={search}
@@ -451,7 +407,6 @@ const VacanciesPage: React.FC = () => {
                     vacancy={vacancy}
                     onEdit={handleEdit}
                     onDelete={handleDelete}
-                    onShowResponses={onShowResponses}
                   />
                 ))}
                 {filteredVacancies.length === 0 && (
@@ -463,148 +418,6 @@ const VacanciesPage: React.FC = () => {
         )}
       </Paper>
 
-      <Dialog
-        open={openDialog}
-        onClose={() => setOpenDialog(false)}
-        maxWidth="sm"
-        fullWidth
-        TransitionComponent={Slide}
-        PaperProps={{ sx: { borderRadius: 3, p: 1 } }}
-      >
-        <DialogTitle sx={{ fontWeight: 700, fontSize: 22, pb: 0.5 }}>
-          {editingVacancy ? 'Редактировать вакансию' : 'Добавить новую вакансию'}
-        </DialogTitle>
-        <DialogContent sx={{ pt: 1 }}>
-          <TextField
-            autoFocus
-            margin="dense"
-            label="Название"
-            fullWidth
-            variant="outlined"
-            value={formData.title}
-            onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-            sx={{ mb: 2 }}
-          />
-          <TextField
-            margin="dense"
-            label="Описание"
-            fullWidth
-            variant="outlined"
-            value={formData.description}
-            onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-            sx={{ mb: 2 }}
-          />
-          <TextField
-            margin="dense"
-            label="Требования"
-            fullWidth
-            variant="outlined"
-            value={formData.requirements}
-            onChange={(e) => setFormData({ ...formData, requirements: e.target.value })}
-            sx={{ mb: 2 }}
-          />
-          <TextField label="Зарплата" fullWidth variant="outlined" value={formData.salary} onChange={e => setFormData({ ...formData, salary: e.target.value })} sx={{ mb: 2 }} />
-          <TextField label="Город / Локация" fullWidth variant="outlined" value={formData.location} onChange={e => setFormData({ ...formData, location: e.target.value })} sx={{ mb: 2 }} />
-          <TextField label="Формат работы" fullWidth variant="outlined" value={formData.workFormat} onChange={e => setFormData({ ...formData, workFormat: e.target.value })} sx={{ mb: 2 }} />
-          <TextField label="График" fullWidth variant="outlined" value={formData.schedule} onChange={e => setFormData({ ...formData, schedule: e.target.value })} sx={{ mb: 2 }} />
-          <TextField label="Дата публикации" type="date" fullWidth variant="outlined" value={formData.publishedAt} onChange={e => setFormData({ ...formData, publishedAt: e.target.value })} sx={{ mb: 2 }} InputLabelProps={{ shrink: true }} />
-          <TextField label="Контакт HR" fullWidth variant="outlined" value={formData.hrContact} onChange={e => setFormData({ ...formData, hrContact: e.target.value })} sx={{ mb: 2 }} />
-          <TextField label="Бонусы" fullWidth variant="outlined" value={formData.bonuses} onChange={e => setFormData({ ...formData, bonuses: e.target.value })} sx={{ mb: 2 }} />
-          <TextField label="Этапы отбора" fullWidth variant="outlined" value={formData.selectionStages} onChange={e => setFormData({ ...formData, selectionStages: e.target.value })} sx={{ mb: 2 }} />
-          <TextField label="Стек технологий" fullWidth variant="outlined" value={formData.stack} onChange={e => setFormData({ ...formData, stack: e.target.value })} sx={{ mb: 2 }} />
-          <TextField label="Опыт работы" fullWidth variant="outlined" value={formData.experience} onChange={e => setFormData({ ...formData, experience: e.target.value })} sx={{ mb: 2 }} />
-          <TextField label="Образование" fullWidth variant="outlined" value={formData.education} onChange={e => setFormData({ ...formData, education: e.target.value })} sx={{ mb: 2 }} />
-          <TextField label="Ссылки (JSON или текст)" fullWidth variant="outlined" value={formData.links} onChange={e => setFormData({ ...formData, links: e.target.value })} sx={{ mb: 2 }} />
-          <TextField label="PDF (ссылка)" fullWidth variant="outlined" value={formData.pdf} onChange={e => setFormData({ ...formData, pdf: e.target.value })} sx={{ mb: 2 }} />
-          <Autocomplete
-            freeSolo
-            options={categories.map(cat => cat.name)}
-            value={categories.find(cat => cat.id === formData.categoryId)?.name || ''}
-            onChange={async (event, newValue) => {
-              if (typeof newValue === 'string') {
-                const existing = categories.find(cat => cat.name === newValue);
-                if (existing) {
-                  setFormData({ ...formData, categoryId: existing.id });
-                } else {
-                  // Если введено новое название, создаём категорию
-                  const response = await safeApiCall('/api/vacancies/categories', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ name: newValue }),
-                  });
-                  const created = await response.json();
-                  setCategories(prev => [...prev, created]);
-                  setFormData({ ...formData, categoryId: created.id });
-                }
-              } else {
-                const selected = categories.find(cat => cat.name === newValue);
-                setFormData({ ...formData, categoryId: selected?.id });
-              }
-            }}
-            renderInput={(params) => (
-              <TextField {...params} label="Категория" fullWidth sx={{ mb: 2 }} />
-            )}
-          />
-          <Box sx={{ display: 'flex', gap: 2, mb: 2 }}>
-            <TextField
-              label="Цвет текста"
-              type="color"
-              value={formData.textColor}
-              onChange={(e) => setFormData({ ...formData, textColor: e.target.value })}
-              sx={{ width: 120 }}
-              InputLabelProps={{ shrink: true }}
-            />
-            <TextField
-              label="Цвет фона"
-              type="color"
-              value={formData.bgColor}
-              onChange={(e) => setFormData({ ...formData, bgColor: e.target.value })}
-              sx={{ width: 120 }}
-              InputLabelProps={{ shrink: true }}
-            />
-          </Box>
-          {/* Превью блока */}
-          <Box sx={{ mt: 2, p: 2, border: '1px solid #e0e0e0', borderRadius: 2 }}>
-            <Typography variant="subtitle2" sx={{ mb: 1 }}>Превью:</Typography>
-            <Box sx={{
-              display: 'flex',
-              alignItems: 'center',
-              p: 2,
-              borderRadius: 1,
-              background: formData.bgColor,
-              color: formData.textColor,
-            }}>
-              <Avatar
-                sx={{ 
-                  width: 40, 
-                  height: 40, 
-                  mr: 2,
-                  bgcolor: formData.bgColor,
-                  color: formData.textColor,
-                }}
-              >
-                <WorkIcon />
-              </Avatar>
-              <Box>
-                <Typography variant="body1" sx={{ fontWeight: 500 }}>
-                  {formData.title || 'Название вакансии'}
-                </Typography>
-                <Typography variant="body2" sx={{ color: formData.textColor, opacity: 0.7 }}>
-                  {formData.description || 'Описание'}
-                </Typography>
-              </Box>
-            </Box>
-          </Box>
-        </DialogContent>
-        <DialogActions sx={{ pb: 2, pr: 3 }}>
-          <Button onClick={() => setOpenDialog(false)} sx={{ borderRadius: 2 }}>Отмена</Button>
-          <Button onClick={handleSubmit} variant="contained" sx={{ borderRadius: 2 }}>
-            {editingVacancy ? 'Сохранить' : 'Добавить'}
-          </Button>
-        </DialogActions>
-      </Dialog>
-
-      {/* Подтверждение удаления */}
       <Dialog open={!!deleting} onClose={() => setDeleting(null)} maxWidth="xs" TransitionComponent={Slide}>
         <DialogTitle>Удалить вакансию?</DialogTitle>
         <DialogContent>
@@ -616,39 +429,9 @@ const VacanciesPage: React.FC = () => {
         </DialogActions>
       </Dialog>
 
-      {/* Snackbar */}
       <Snackbar open={snackbar.open} autoHideDuration={4000} onClose={() => setSnackbar({...snackbar, open: false})} anchorOrigin={{vertical: 'bottom', horizontal: 'center'}}>
         <Alert severity={snackbar.severity} sx={{ width: '100%' }}>{snackbar.message}</Alert>
       </Snackbar>
-
-      {/* Диалог откликов */}
-      <Dialog open={openResponses} onClose={handleCloseResponses} maxWidth="sm" fullWidth>
-        <DialogTitle>Отклики на вакансию: {responsesVacancy?.title}</DialogTitle>
-        <DialogContent>
-          {responses.length === 0 ? (
-            <Typography>Нет откликов</Typography>
-          ) : (
-            <List>
-              {responses.map(resp => (
-                <ListItem key={resp.id} alignItems="flex-start">
-                  <ListItemText
-                    primary={<>
-                      <b>{resp.name}</b> — <a href={`mailto:${resp.email}`}>{resp.email}</a> — <a href={`tel:${resp.phone}`}>{resp.phone}</a>
-                    </>}
-                    secondary={<>
-                      <Typography variant="body2" sx={{ whiteSpace: 'pre-line' }}>{resp.message}</Typography>
-                      <Typography variant="caption" sx={{ color: 'grey.600' }}>{new Date(resp.createdAt).toLocaleString()}</Typography>
-                    </>}
-                  />
-                </ListItem>
-              ))}
-            </List>
-          )}
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={handleCloseResponses}>Закрыть</Button>
-        </DialogActions>
-      </Dialog>
     </Box>
   );
 };

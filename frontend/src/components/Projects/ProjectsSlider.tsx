@@ -62,20 +62,20 @@ const ProjectsSlider: React.FC = () => {
     return {
       ...base,
       width: {
-        xs: 300,
+        xs: 'min(360px, calc(100vw - 32px))',
         sm: 370,
         md: isCenter ? 600 : 400,
         lg: isCenter ? 720 : 480,
       },
-      minHeight: { xs: 360, md: isCenter ? 440 : 320 },
-      maxWidth: { xs: 340, md: isCenter ? 720 : 480 },
-      maxHeight: { xs: 480, md: isCenter ? 540 : 380 },
-      p: { xs: 2.5, md: 4 },
+      minHeight: { xs: 340, md: isCenter ? 440 : 320 },
+      maxWidth: { xs: 'calc(100vw - 32px)', md: isCenter ? 720 : 480 },
+      maxHeight: { xs: 460, md: isCenter ? 540 : 380 },
+      p: { xs: 2, md: 4 },
       transform: {
         xs:
           isCenter
-            ? 'translateX(-50%) scale(1.06)'
-            : `translateX(-50%) translateX(${pos * 81}%) translateY(11px) scale(0.98)`,
+            ? 'translateX(-50%) scale(1)'
+            : `translateX(-50%) translateX(${pos * 62}%) translateY(8px) scale(0.98)`,
         md:
           isCenter
             ? 'translateX(-50%) scale(1.09)'
@@ -154,8 +154,8 @@ const ProjectsSlider: React.FC = () => {
           alignItems: 'center',
           position: 'relative',
           minHeight: { xs: 480, md: 700, lg: 500 },
-          px: { xs: 0, md: 0 },
-          overflow: 'visible',
+          px: { xs: 2, md: 0 },
+          overflow: 'hidden',
         }}
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
@@ -163,7 +163,7 @@ const ProjectsSlider: React.FC = () => {
         onTouchEnd={handleTouchEnd}
         onWheel={handleWheel}
       >
-        <Box sx={{ width: { xs: 370, sm: 440, md: 1100, lg: 1400 }, height: { xs: 480, md: 700, lg: 500 }, position: 'relative', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+        <Box sx={{ width: { xs: '100%', sm: '100%', md: 1100, lg: 1400 }, maxWidth: '100%', height: { xs: 480, md: 700, lg: 500 }, position: 'relative', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
           {animatedIndices.map((idx, i) => {
             // pos: -1 (левый), 0 (центр), 1 (правый)
             const pos = total < 3 ? 0 : i - 1;

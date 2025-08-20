@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Box, Typography, Avatar, useMediaQuery } from '@mui/material';
+import { Box, Typography, useMediaQuery } from '@mui/material';
 import axios from 'axios';
 
 const API_URL = '/api/team';
@@ -20,14 +20,16 @@ const TeamSlider: React.FC = () => {
   const isTablet = useMediaQuery('(max-width:900px)');
 
   useEffect(() => {
-    axios.get(API_URL).then(res => setTeamMembers(res.data));
+    axios.get(API_URL)
+      .then(res => setTeamMembers(res.data))
+      .catch(err => {
+        console.error('Ошибка загрузки команды:', err);
+        setTeamMembers([]);
+      });
   }, []);
 
-  // Высота блока и карточек
   const blockHeight = isMobile ? 320 : isTablet ? 400 : 480;
   const cardHeight = blockHeight - 40;
-  // Масштабируем карточки по ширине, чтобы все помещались в блоке
-  // Активная — 40% ширины, остальные делят 60%
   const total = teamMembers.length;
   const activePercent = 0.4;
   const inactivePercent = total > 1 ? (1 - activePercent) / (total - 1) : 0;
@@ -36,37 +38,35 @@ const TeamSlider: React.FC = () => {
     <Box
       sx={{
         width: '100%',
-        mt: { xs: 8, md: 12 }, // увеличенный верхний margin
-        pt: { xs: 4, md: 6 }, // верхний padding
-        pb: { xs: 8, md: 12 }, // увеличенный нижний padding
-        px: 0, // убираю все боковые отступы
+        mt: { xs: 8, md: 12 },
+        pt: { xs: 4, md: 6 },
+        pb: { xs: 8, md: 12 },
+        px: 0,
         position: 'relative',
         backgroundImage: 'url(/image.png)',
         backgroundSize: 'cover',
         backgroundPosition: 'center',
         backgroundRepeat: 'no-repeat',
-        backgroundColor: '#F7F9FB', // fallback
+        backgroundColor: '#F7F9FB',
       }}
     >
-              <Typography
-          variant="h3"
-          component="h2"
-          sx={{
-            fontWeight: 900,
-            fontSize: { xs: 28, md: 40 },
-            mb: { xs: 3, md: 4 },
-            textAlign: 'left',
-            pl: { xs: 2, md: 6 },
-            color: '#fff',
-            letterSpacing: '-0.02em',
-            lineHeight: 1.1,
-          }}
-        >
-          Наша <Box component="span" sx={{ color: '#fff' }}>команда</Box>
-        </Typography>
-      {teamMembers.length === 0 ? (
-        <Box sx={{ textAlign: 'center', py: 8, color: 'grey.200' }}>Нет участников для отображения</Box>
-      ) : (
+      <Typography
+        variant="h3"
+        component="h2"
+        sx={{
+          fontWeight: 900,
+          fontSize: { xs: 28, md: 40 },
+          mb: { xs: 3, md: 4 },
+          textAlign: 'left',
+          pl: { xs: 2, md: 6 },
+          color: '#fff',
+          letterSpacing: '-0.02em',
+          lineHeight: 1.1,
+        }}
+      >
+        Наша <Box component="span" sx={{ color: '#fff' }}>команда</Box>
+      </Typography>
+      {teamMembers.length === 0 ? null : (
         <Box
           ref={containerRef}
           sx={{
@@ -113,11 +113,13 @@ const TeamSlider: React.FC = () => {
               >
                 {isActive && (
                   <>
-                    <Avatar 
-                      src={member.image.startsWith('http') ? member.image : `/api${member.image}`} 
-                      alt={member.name} 
-                      sx={{ width: 80, height: 80, mb: 2 }} 
-                    />
+                    <Box sx={{ width: { xs: 120, md: 160 }, height: { xs: 120, md: 160 }, mb: 2, borderRadius: 1, overflow: 'hidden', background: 'transparent', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                      <img
+                        src={member.image.startsWith('http') ? member.image : `/api${member.image}`}
+                        alt={member.name}
+                        style={{ width: '100%', height: '100%', objectFit: 'contain', display: 'block' }}
+                      />
+                    </Box>
                     <Typography variant="h6" sx={{ fontWeight: 700, mb: 1, textAlign: 'center', color: 'text.primary' }}>{member.name}</Typography>
                     <Typography variant="body2" sx={{ color: 'text.secondary', textAlign: 'center' }}>{member.role}</Typography>
                   </>

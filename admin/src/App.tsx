@@ -10,6 +10,7 @@ import FaqPage from './pages/faq/FaqPage';
 import RequestsPage from './pages/requests/RequestsPage';
 import SettingsPage from './pages/SettingsPage';
 import InternationalExperiencePage from './pages/international-experience/InternationalExperiencePage';
+import VacancyResponsesPage from './pages/vacancies/VacancyResponsesPage';
 
 function App() {
   return (
@@ -20,6 +21,7 @@ function App() {
           <Route path="dashboard" element={<DashboardPage />} />
           <Route path="projects" element={<ProjectsPage />} />
           <Route path="vacancies" element={<VacanciesPage />} />
+          <Route path="vacancies/responses" element={<VacancyResponsesPage />} />
           <Route path="team" element={<TeamPage />} />
           <Route path="partners" element={<PartnersPage />} />
           <Route path="directions" element={<DirectionsPage />} />

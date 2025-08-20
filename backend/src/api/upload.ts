@@ -23,14 +23,23 @@ const storage = multer.diskStorage({
   }
 });
 
-// Фильтр файлов - только изображения
+// Фильтр файлов - изображения и документы (PDF/DOC/PPT)
 const fileFilter = (req: any, file: any, cb: any) => {
-  const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp'];
-  
+  const allowedTypes = [
+    // images
+    'image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp',
+    // documents
+    'application/pdf',
+    'application/msword',
+    'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+    'application/vnd.ms-powerpoint',
+    'application/vnd.openxmlformats-officedocument.presentationml.presentation'
+  ];
+
   if (allowedTypes.includes(file.mimetype)) {
     cb(null, true);
   } else {
-    cb(new Error('Неподдерживаемый тип файла. Разрешены только изображения (JPEG, PNG, GIF, WebP)'));
+    cb(new Error('Неподдерживаемый тип файла. Разрешены изображения и документы (PDF, DOC, DOCX, PPT, PPTX)'));
   }
 };
 
@@ -38,7 +47,7 @@ const upload = multer({
   storage: storage,
   fileFilter: fileFilter,
   limits: {
-    fileSize: 5 * 1024 * 1024 // 5MB максимум
+    fileSize: 20 * 1024 * 1024 // 20MB максимум для документов/изображений
   }
 });
 

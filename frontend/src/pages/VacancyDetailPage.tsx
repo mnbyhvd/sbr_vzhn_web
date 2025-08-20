@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
 import { useParams, Link as RouterLink } from 'react-router-dom';
 import {
@@ -24,7 +24,6 @@ interface Vacancy {
   description: string;
   requirements: string;
   category?: { id: number; name: string };
-  // Новые опциональные поля
   salary?: string;
   location?: string;
   workFormat?: string;
@@ -46,9 +45,18 @@ const VacancyDetailPage: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const { id } = useParams<{ id: string }>();
   const [allVacancies, setAllVacancies] = useState<Vacancy[]>([]);
-  const [responseForm, setResponseForm] = useState({ name: '', email: '', message: '' });
+  const [responseForm, setResponseForm] = useState({ name: '', email: '', phone: '', github: '', message: '' });
+  const [resumeUrl, setResumeUrl] = useState<string>('');
+  const [uploading, setUploading] = useState(false);
   const [responseSuccess, setResponseSuccess] = useState(false);
   const [responseError, setResponseError] = useState<string | null>(null);
+
+  const handleDownloadPdf = () => {
+    const originalTitle = document.title;
+    if (vacancy?.title) document.title = `${vacancy.title} — вакансия`;
+    window.print();
+    document.title = originalTitle;
+  };
 
   useEffect(() => {
     const fetchVacancy = async () => {
@@ -59,12 +67,10 @@ const VacancyDetailPage: React.FC = () => {
         setError(null);
       } catch (err) {
         setError('Не удалось загрузить информацию о вакансии.');
-        console.error(err);
       } finally {
         setLoading(false);
       }
     };
-
     fetchVacancy();
   }, [id]);
 
@@ -76,13 +82,51 @@ const VacancyDetailPage: React.FC = () => {
     setResponseForm({ ...responseForm, [e.target.name]: e.target.value });
   };
 
+  const handleFileSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    if (!['application/pdf'].includes(file.type)) {
+      setResponseError('Загрузите PDF-файл');
+      return;
+    }
+    if (file.size > 20 * 1024 * 1024) {
+      setResponseError('PDF не должен превышать 20MB');
+      return;
+    }
+    setUploading(true);
+    setResponseError(null);
+    try {
+      const formData = new FormData();
+      formData.append('image', file);
+      const resp = await axios.post('/api/upload', formData, { headers: { 'Content-Type': 'multipart/form-data' } });
+      setResumeUrl(resp.data.url);
+    } catch (e: any) {
+      setResponseError(e?.response?.data?.message || 'Ошибка загрузки файла');
+    } finally {
+      setUploading(false);
+    }
+  };
+
   const handleResponseSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setResponseError(null);
+    if (!responseForm.name || !responseForm.email || !responseForm.phone || !responseForm.message) {
+      setResponseError('Заполните имя, email, телефон и сообщение');
+      return;
+    }
     try {
-      await axios.post(`${API_URL}/${id}/responses`, responseForm);
+      const messageParts = [responseForm.message];
+      if (responseForm.github) messageParts.push(`GitHub: ${responseForm.github}`);
+      if (resumeUrl) messageParts.push(`Резюме: ${resumeUrl}`);
+      await axios.post(`${API_URL}/${id}/responses`, {
+        name: responseForm.name,
+        email: responseForm.email,
+        phone: responseForm.phone,
+        message: messageParts.join('\n'),
+      });
       setResponseSuccess(true);
-      setResponseForm({ name: '', email: '', message: '' });
+      setResponseForm({ name: '', email: '', phone: '', github: '', message: '' });
+      setResumeUrl('');
     } catch (err) {
       setResponseError('Ошибка при отправке отклика.');
     }
@@ -113,10 +157,83 @@ const VacancyDetailPage: React.FC = () => {
   }
 
   return (
-    <Container sx={{ py: { xs: 2, md: 4 }, maxWidth: 1100, mx: 'auto', px: { xs: 2, md: 3 } }}>
+    <Container sx={{ pt: { xs: 8, md: 10 }, pb: { xs: 2, md: 4 }, maxWidth: 1100, mx: 'auto', px: { xs: 2, md: 3 } }}>
       <Button startIcon={<ArrowBackIcon />} component={RouterLink} to="/vacancies" sx={{ mb: { xs: 1, md: 2 } }}>
         Все вакансии
       </Button>
+      <style>{`
+        @page { size: A4; margin: 10mm; }
+        @media print {
+          body { margin: 0; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+          /* Глобально скрываем шапку/футер и навигацию */
+          header, footer, .MuiAppBar-root, .MuiDrawer-root, nav { display: none !important; height: 0 !important; overflow: hidden !important; }
+          .no-print { display: none !important; }
+          .pdf-layout { display: block !important; }
+        }
+      `}</style>
+      {/* Печатная верстка A4 */}
+      <Box className="pdf-layout" sx={{ display: 'none', fontFamily: 'Inter, Arial, sans-serif', color: '#111' }}>
+        <Box sx={{ borderBottom: '2px solid #1A59DE', pb: 1, mb: 2 }}>
+          <Typography variant="h4" sx={{ fontWeight: 800 }}>{vacancy.title}</Typography>
+          <Typography variant="body2" sx={{ color: '#666' }}>Опубликовано: {vacancy.publishedAt ? new Date(vacancy.publishedAt).toLocaleDateString() : new Date().toLocaleDateString()}</Typography>
+        </Box>
+        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1, mb: 2, fontSize: 14 }}>
+          {vacancy.salary && <Typography><b>Зарплата:</b> {vacancy.salary}</Typography>}
+          {vacancy.location && <Typography><b>Локация:</b> {vacancy.location}</Typography>}
+          {vacancy.workFormat && <Typography><b>Формат работы:</b> {vacancy.workFormat}</Typography>}
+          {vacancy.schedule && <Typography><b>График:</b> {vacancy.schedule}</Typography>}
+          {vacancy.category && <Typography><b>Категория:</b> {vacancy.category.name}</Typography>}
+          {vacancy.experience && <Typography><b>Опыт:</b> {vacancy.experience}</Typography>}
+          {vacancy.education && <Typography><b>Образование:</b> {vacancy.education}</Typography>}
+        </Box>
+        {vacancy.description && (
+          <Box sx={{ mb: 2 }}>
+            <Typography variant="h6" sx={{ fontWeight: 700, color: '#1A59DE', mb: 0.5 }}>Описание</Typography>
+            <Typography variant="body1" sx={{ whiteSpace: 'pre-wrap' }}>{vacancy.description}</Typography>
+          </Box>
+        )}
+        {vacancy.requirements && (
+          <Box sx={{ mb: 2 }}>
+            <Typography variant="h6" sx={{ fontWeight: 700, color: '#1A59DE', mb: 0.5 }}>Требования</Typography>
+            <Typography variant="body1" sx={{ whiteSpace: 'pre-wrap' }}>{vacancy.requirements}</Typography>
+          </Box>
+        )}
+        {vacancy.bonuses && (
+          <Box sx={{ mb: 2 }}>
+            <Typography variant="h6" sx={{ fontWeight: 700, color: '#1A59DE', mb: 0.5 }}>Бонусы</Typography>
+            <Typography variant="body1" sx={{ whiteSpace: 'pre-wrap' }}>{vacancy.bonuses}</Typography>
+          </Box>
+        )}
+        {vacancy.selectionStages && (
+          <Box sx={{ mb: 2 }}>
+            <Typography variant="h6" sx={{ fontWeight: 700, color: '#1A59DE', mb: 0.5 }}>Этапы отбора</Typography>
+            <Typography variant="body1" sx={{ whiteSpace: 'pre-wrap' }}>{vacancy.selectionStages}</Typography>
+          </Box>
+        )}
+        {vacancy.links && (
+          <Box sx={{ mb: 2 }}>
+            <Typography variant="h6" sx={{ fontWeight: 700, color: '#1A59DE', mb: 0.5 }}>Ссылки</Typography>
+            {(() => {
+              try {
+                const arr = JSON.parse(vacancy.links);
+                if (Array.isArray(arr)) {
+                  return (
+                    <ul style={{ margin: 0, paddingLeft: 16, fontSize: 12 }}>
+                      {arr.map((l: string, i: number) => (
+                        <li key={i} style={{ wordBreak: 'break-all' }}>{l}</li>
+                      ))}
+                    </ul>
+                  );
+                }
+              } catch {}
+              return <Typography variant="body2" sx={{ wordBreak: 'break-all' }}>{vacancy.links}</Typography>;
+            })()}
+          </Box>
+        )}
+        {/* Без футера для печати */}
+      </Box>
+      {/* Экранная верстка (скрывается при печати) */}
+      <Box className="no-print">
       <Paper elevation={3} sx={{ maxWidth: 900, mx: 'auto', p: { xs: 2, md: 4 }, borderRadius: 1, mb: { xs: 3, md: 4 }, boxShadow: '0 8px 48px 0 rgba(26,89,222,0.10)' }}>
         <Box sx={{ display: 'flex', flexDirection: { xs: 'column', md: 'row' }, gap: { xs: 3, md: 6 } }}>
           {/* Левая колонка — ключевые параметры */}
@@ -141,13 +258,9 @@ const VacancyDetailPage: React.FC = () => {
               {vacancy.schedule && <Chip label={vacancy.schedule} variant="outlined" size="small" />}
               {vacancy.category && <Chip label={vacancy.category.name} color="default" variant="outlined" size="small" />}
             </Box>
-            {vacancy.pdf && (
-              <MuiLink href={vacancy.pdf} target="_blank" rel="noopener noreferrer" underline="none">
-                <Button variant="contained" color="primary" sx={{ borderRadius: 999, fontWeight: 700, mt: 1 }}>
-                  Скачать PDF
-                </Button>
-              </MuiLink>
-            )}
+            <Button onClick={handleDownloadPdf} variant="contained" color="primary" sx={{ borderRadius: 999, fontWeight: 700, mt: 1 }} className="no-print">
+              Скачать PDF
+            </Button>
             {vacancy.publishedAt && (
               <Typography variant="body2" sx={{ mt: 2, color: 'text.secondary' }}>
                 Опубликовано: {new Date(vacancy.publishedAt).toLocaleDateString()}
@@ -230,36 +343,34 @@ const VacancyDetailPage: React.FC = () => {
         <Typography variant="h5" sx={{ mb: 2, fontWeight: 700, color: 'primary.main' }}>
           Откликнуться на вакансию
         </Typography>
-        <Box
-          sx={{
-            background: '#fff',
-            boxShadow: '0 8px 48px 0 rgba(26,89,222,0.10)',
-            borderRadius: 1,
-            p: { xs: 3, md: 4 },
-            maxWidth: 480,
-            mx: 'auto',
-          }}
-        >
+        <Box sx={{ background: '#fff', boxShadow: '0 8px 48px 0 rgba(26,89,222,0.10)', borderRadius: 1, p: { xs: 3, md: 4 }, maxWidth: 520, mx: 'auto' }}>
           <form onSubmit={handleResponseSubmit}>
-            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
+            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2.5 }}>
               <TextField label="Имя" name="name" value={responseForm.name} onChange={handleResponseChange} required fullWidth size="medium" />
               <TextField label="Email" name="email" value={responseForm.email} onChange={handleResponseChange} required type="email" fullWidth size="medium" />
+              <TextField label="Телефон" name="phone" value={responseForm.phone} onChange={handleResponseChange} required fullWidth size="medium" />
+              <TextField label="GitHub (опционально)" name="github" value={responseForm.github} onChange={handleResponseChange} fullWidth size="medium" />
+              <Box>
+                <Button variant="outlined" component="label" disabled={uploading} sx={{ mr: 2 }}>
+                  {uploading ? 'Загрузка…' : (resumeUrl ? 'Заменить PDF' : 'Прикрепить PDF-резюме')}
+                  <input hidden type="file" accept="application/pdf" onChange={handleFileSelect} />
+                </Button>
+                {resumeUrl && (
+                  <MuiLink href={resumeUrl.startsWith('http') ? resumeUrl : `/api${resumeUrl}`} target="_blank" rel="noopener noreferrer">
+                    Просмотр резюме
+                  </MuiLink>
+                )}
+              </Box>
               <TextField label="Сообщение" name="message" value={responseForm.message} onChange={handleResponseChange} required multiline rows={4} fullWidth size="medium" />
               {responseSuccess && <Alert severity="success">Отклик успешно отправлен!</Alert>}
               {responseError && <Alert severity="error">{responseError}</Alert>}
-              <Button
-                type="submit"
-                variant="contained"
-                color="primary"
-                size="large"
-                sx={{ borderRadius: 999, fontWeight: 700, fontSize: 18, px: 5, mt: 1, boxShadow: '0 4px 24px rgba(26,89,222,0.10)' }}
-                disabled={loading}
-              >
-                {loading ? 'Отправка...' : 'Отправить отклик'}
+              <Button type="submit" variant="contained" color="primary" size="large" sx={{ borderRadius: 999, fontWeight: 700, fontSize: 18, px: 5, mt: 1 }} disabled={loading || uploading}>
+                {loading ? 'Отправка…' : 'Отправить отклик'}
               </Button>
             </Box>
           </form>
         </Box>
+      </Box>
       </Box>
     </Container>
   );

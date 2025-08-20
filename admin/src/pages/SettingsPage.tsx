@@ -1,19 +1,19 @@
 import React, { useEffect, useState } from 'react';
-import { Box, Typography, Tabs, Tab, TextField, Button, Snackbar, Alert, Paper, InputAdornment, IconButton, Avatar } from '@mui/material';
+import { Box, Typography, Tabs, Tab, TextField, Button, Snackbar, Alert, Paper, InputAdornment, IconButton, Avatar, Divider } from '@mui/material';
 import axios from 'axios';
 import ContentCopyIcon from '@mui/icons-material/ContentCopy';
+import QrCode2Icon from '@mui/icons-material/QrCode2';
+import FileUpload from '../components/FileUpload';
 
 const API_URL = '/api/site-settings';
 
-const tabLabels = ['Цвета', 'Тексты', 'Контакты', 'Соцсети', 'QR', 'Прочее'];
+// Упрощаем до нужного: Контакты, QR, Документы
+const tabLabels = ['Контакты', 'QR', 'Документы'];
 
 const defaultSettings = {
-  colors: { primary: '', secondary: '', background: '', text: '', footerBg: '', footerText: '' },
-  texts: { siteName: '', slogan: '', footer: '', copyright: '' },
   contacts: { email: '', phone: '', address: '' },
-  socials: { vk: '', telegram: '', whatsapp: '', youtube: '', facebook: '', instagram: '' },
   qr: { image: '', link: '' },
-  misc: { presentation: '', banner: '' }
+  misc: { presentation: '', privacy: '' }
 };
 
 // Безопасно приводит значение к строке
@@ -46,6 +46,7 @@ const validateUrl = (url: string) => !url || /^https?:\/\//.test(url);
 const SettingsPage: React.FC = () => {
   const [tab, setTab] = useState(0);
   const [settings, setSettings] = useState<any>(defaultSettings);
+  const [footerBgColor, setFooterBgColor] = useState<string>('#1A59DE');
   const [loading, setLoading] = useState(false);
   const [snackbar, setSnackbar] = useState<{open: boolean, message: string, severity: 'success'|'error'}>({open: false, message: '', severity: 'success'});
 
@@ -57,7 +58,20 @@ const SettingsPage: React.FC = () => {
     setLoading(true);
     try {
       const res = await axios.get(API_URL);
-      setSettings(res.data);
+      // Бэкенд теперь возвращает объекты; оставляем только нужные секции
+      const { contacts = {}, qr = {}, misc = {}, colors = {} } = res.data || {};
+      setSettings({
+        contacts: contacts || defaultSettings.contacts,
+        qr: qr || defaultSettings.qr,
+        misc: { presentation: misc.presentation || '', privacy: misc.privacy || '' },
+      });
+      // Постараемся взять цвет футера из colors.footerBg (может прийти строкой JSON)
+      try {
+        const colorsObj = typeof colors === 'string' ? JSON.parse(colors) : (colors || {});
+        if (colorsObj && typeof colorsObj.footerBg === 'string' && colorsObj.footerBg.trim()) {
+          setFooterBgColor(colorsObj.footerBg);
+        }
+      } catch {}
     } catch {
       setSnackbar({open: true, message: 'Ошибка загрузки настроек', severity: 'error'});
     } finally {
@@ -92,47 +106,6 @@ const SettingsPage: React.FC = () => {
       <Box sx={{ p: 3, background: '#fff', borderRadius: 3, boxShadow: 1 }}>
         {tab === 0 && (
           <Box display="flex" flexDirection="column" gap={2}>
-            <Typography variant="h6">Цвета сайта</Typography>
-            {Object.entries(settings.colors).map(([key, value]) => (
-              <TextField key={key} label={key} type="color" value={value} onChange={e => handleChange('colors', key, e.target.value)} sx={{ width: 180 }} InputLabelProps={{ shrink: true }} />
-            ))}
-          </Box>
-        )}
-        {tab === 1 && (
-          <Box display="flex" flexDirection="column" gap={2}>
-            <Typography variant="h6">Тексты</Typography>
-            {['siteName', 'slogan', 'footer', 'copyright'].map((key) => (
-              <TextField
-                key={key}
-                label={LABELS[key] || key}
-                value={typeof settings.texts[key] === 'string' ? settings.texts[key] : ''}
-                onChange={e => handleChange('texts', key, e.target.value)}
-                fullWidth
-              />
-            ))}
-            {/* Превью футера */}
-            <Box sx={{ mt: 4, p: 3, border: '1px solid #e0e0e0', borderRadius: 2, bgcolor: '#f9f9f9' }}>
-              <Typography variant="subtitle2" sx={{ mb: 1 }}>Превью футера:</Typography>
-              <Box sx={{ color: '#222', fontSize: 15, mb: 1 }}>{settings.texts.copyright || '© 2024 Название компании'}</Box>
-              <Box sx={{ color: '#555', fontSize: 14, mb: 1 }}>
-                {settings.contacts.email && <span>Email: {settings.contacts.email} </span>}
-                {settings.contacts.phone && <span>Тел: {settings.contacts.phone} </span>}
-                {settings.contacts.address && <span>Адрес: {settings.contacts.address}</span>}
-              </Box>
-              <Box sx={{ display: 'flex', gap: 2, mt: 1 }}>
-                {['vk', 'telegram', 'whatsapp', 'youtube', 'facebook', 'instagram'].map((key) => (
-                  settings.socials[key] ? (
-                    <a key={key} href={settings.socials[key]} target="_blank" rel="noopener noreferrer" style={{ color: '#1A59DE', textDecoration: 'none', fontSize: 18 }}>
-                      {LABELS[key]}
-                    </a>
-                  ) : null
-                ))}
-              </Box>
-            </Box>
-          </Box>
-        )}
-        {tab === 2 && (
-          <Box display="flex" flexDirection="column" gap={2}>
             <Typography variant="h6">Контакты</Typography>
             {['email', 'phone', 'address'].map((key) => {
               const value = typeof settings.contacts[key] === 'string' ? settings.contacts[key] : '';
@@ -160,56 +133,58 @@ const SettingsPage: React.FC = () => {
             })}
           </Box>
         )}
-        {tab === 3 && (
-          <Box display="flex" flexDirection="column" gap={2}>
-            <Typography variant="h6">Соцсети</Typography>
-            {['vk', 'telegram', 'whatsapp', 'youtube', 'facebook', 'instagram'].map((key) => {
-              const value = getStringValue(settings.socials[key]);
-              let error = false;
-              let helperText = '';
-              if (value && !validateUrl(value)) {
-                error = true;
-                helperText = 'Некорректная ссылка (должна начинаться с http:// или https://)';
-              }
-              return (
-                <TextField
-                  key={key}
-                  label={LABELS[key] || key}
-                  value={value}
-                  onChange={e => handleChange('socials', key, e.target.value)}
-                  fullWidth
-                  error={error}
-                  helperText={helperText}
-                  InputProps={{
-                    endAdornment: value ? (
-                      <InputAdornment position="end">
-                        <IconButton onClick={() => navigator.clipboard.writeText(value)}>
-                          <ContentCopyIcon fontSize="small" />
-                        </IconButton>
-                      </InputAdornment>
-                    ) : null
-                  }}
-                />
-              );
-            })}
-          </Box>
-        )}
-        {tab === 4 && (
+        {tab === 1 && (
           <Box display="flex" flexDirection="column" gap={2}>
             <Typography variant="h6">QR-код</Typography>
             <TextField label="Ссылка" value={typeof settings.qr.link === 'string' ? settings.qr.link : ''} onChange={e => handleChange('qr', 'link', e.target.value)} fullWidth />
             <TextField label="URL изображения QR" value={typeof settings.qr.image === 'string' ? settings.qr.image : ''} onChange={e => handleChange('qr', 'image', e.target.value)} fullWidth />
+            <Button
+              variant="outlined"
+              startIcon={<QrCode2Icon />}
+              onClick={async () => {
+                if (!settings.qr.link) return setSnackbar({ open: true, message: 'Укажите ссылку для QR', severity: 'error' });
+                try {
+                  // Используем публичный API для генерации PNG QR и зальем в /api/upload
+                  const hex = (footerBgColor || '#1A59DE').replace('#','');
+                  const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=240x240&data=${encodeURIComponent(settings.qr.link)}&color=ffffff&bgcolor=${encodeURIComponent(hex)}`;
+                  const resp = await fetch(qrUrl);
+                  const blob = await resp.blob();
+                  const file = new File([blob], 'qr.png', { type: 'image/png' });
+                  const formData = new FormData();
+                  formData.append('image', file);
+                  const uploadResp = await axios.post('/api/upload', formData, { headers: { 'Content-Type': 'multipart/form-data' }});
+                  handleChange('qr', 'image', uploadResp.data.url || '');
+                  setSnackbar({ open: true, message: 'QR сгенерирован', severity: 'success' });
+                } catch (e) {
+                  setSnackbar({ open: true, message: 'Не удалось сгенерировать QR', severity: 'error' });
+                }
+              }}
+            >
+              Сгенерировать QR
+            </Button>
             {typeof settings.qr.image === 'string' && settings.qr.image.trim() !== '' ? (
-              <Avatar src={settings.qr.image} alt="QR" sx={{ width: 120, height: 120, mt: 2 }} />
+              <img
+                src={settings.qr.image.startsWith('http') ? settings.qr.image : `/api${settings.qr.image}`}
+                alt="QR"
+                style={{ width: 160, height: 160, marginTop: 8, objectFit: 'contain' }}
+              />
             ) : null}
           </Box>
         )}
-        {tab === 5 && (
+        {tab === 2 && (
           <Box display="flex" flexDirection="column" gap={2}>
-            <Typography variant="h6">Прочее</Typography>
-            {Object.entries(settings.misc).map(([key, value]) => (
-              <TextField key={key} label={key} value={typeof value === 'string' ? value : ''} onChange={e => handleChange('misc', key, e.target.value)} fullWidth />
-            ))}
+            <Typography variant="h6">Документы</Typography>
+            <FileUpload
+              label="Презентация (PDF/PPT)"
+              value={typeof settings.misc.presentation === 'string' ? settings.misc.presentation : ''}
+              onChange={(url) => handleChange('misc', 'presentation', url)}
+            />
+            <Divider />
+            <FileUpload
+              label="Политика конфиденциальности (PDF/DOC)"
+              value={typeof settings.misc.privacy === 'string' ? settings.misc.privacy : ''}
+              onChange={(url) => handleChange('misc', 'privacy', url)}
+            />
           </Box>
         )}
         <Button variant="contained" color="primary" sx={{ mt: 4, borderRadius: 2, fontWeight: 600 }} onClick={handleSave} disabled={loading}>Сохранить</Button>

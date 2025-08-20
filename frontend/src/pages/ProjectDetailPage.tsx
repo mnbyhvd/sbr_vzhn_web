@@ -95,7 +95,7 @@ const ProjectDetailPage: React.FC = () => {
   }
 
   return (
-    <Container sx={{ py: { xs: 2, md: 4 }, maxWidth: 1200, mx: 'auto', px: { xs: 2, md: 3 } }}>
+    <Container sx={{ pt: { xs: 8, md: 10 }, pb: { xs: 2, md: 4 }, maxWidth: 1200, mx: 'auto', px: { xs: 2, md: 3 } }}>
       <Button startIcon={<ArrowBackIcon />} component={RouterLink} to="/projects" sx={{ mb: { xs: 1, md: 2 } }}>
         Все проекты
       </Button>

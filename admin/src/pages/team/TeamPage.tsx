@@ -359,10 +359,13 @@ const TeamPage: React.FC = () => {
               onChange={(value) => setFormData({ ...formData, image: value })}
               label="Фото участника"
             />
+            <Typography variant="caption" sx={{ display: 'block', mt: 1, color: 'text.secondary' }}>
+              Рекомендуемый размер: 600×600px (1:1), формат JPG/PNG, до 5MB. Фото будет немного скруглено и вписано без обрезки.
+            </Typography>
             {/* Превью изображения */}
             {formData.image && (
               <Box sx={{ mt: 1, mb: 1, textAlign: 'center' }}>
-                <img src={formData.image} alt="photo preview" style={{ maxWidth: 120, maxHeight: 120, borderRadius: 8, border: '1px solid #eee', background: '#fff' }} />
+                <img src={formData.image.startsWith('http') ? formData.image : `/api${formData.image}`} alt="photo preview" style={{ width: 120, height: 120, borderRadius: 8, border: '1px solid #eee', background: '#fff', objectFit: 'contain' }} />
               </Box>
             )}
           </Box>

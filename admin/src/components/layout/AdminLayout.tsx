@@ -21,6 +21,7 @@ const navItems = [
   { text: 'Дашборд', icon: <DashboardIcon />, path: '/dashboard' },
   { text: 'Проекты', icon: <BusinessCenterIcon />, path: '/projects' },
   { text: 'Вакансии', icon: <WorkIcon />, path: '/vacancies' },
+  { text: 'Отклики на вакансии', icon: <MailOutlineIcon />, path: '/vacancies/responses' },
   { text: 'Команда', icon: <GroupIcon />, path: '/team' },
   { text: 'FAQ', icon: <QuizIcon />, path: '/faq' },
   { text: 'Партнеры', icon: <HandshakeIcon />, path: '/partners' },
