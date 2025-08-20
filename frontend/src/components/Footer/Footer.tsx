@@ -15,7 +15,6 @@ const Footer: React.FC = () => {
       try {
         const res = await fetch('/api/site-settings');
         const raw = await res.json();
-        // На проде может прийти как строки JSON
         const normalize = (val: any) => {
           if (typeof val === 'string') {
             try { return JSON.parse(val); } catch { return {}; }
@@ -31,9 +30,8 @@ const Footer: React.FC = () => {
     })();
   }, []);
 
-  // Используем цвета из админки только на главной странице
   const footerBgColor = isHomePage ? colors.footerBg : theme.palette.primary.main;
-  const footerTextColor = isHomePage ? colors.footerText : '#fff';
+  const footerTextColor = '#fff';
 
   return (
     <Box
@@ -44,13 +42,11 @@ const Footer: React.FC = () => {
         pt: 5,
         pb: 2,
         width: '100%',
-        // убрано: position, left, right, marginLeft, marginRight
       }}
     >
       <Container sx={{ maxWidth: 1440, mx: 'auto', px: { xs: 2, md: 6 } }}>
         <Box sx={{ display: 'flex', flexDirection: { xs: 'column', md: 'row' }, alignItems: 'center', justifyContent: 'center', gap: 4 }}>
           <Box sx={{ textAlign: 'center', mb: { xs: 3, md: 0 } }}>
-            {/* QR-код (без скруглений/рамок) */}
             {settings?.qr?.image ? (
               <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 1 }}>
                 <img
@@ -92,7 +88,7 @@ const Footer: React.FC = () => {
                 variant="h6"
                 color="inherit"
                 noWrap
-                sx={{ fontWeight: 800, fontSize: 24, letterSpacing: '-0.5px' }}
+                sx={{ fontWeight: 800, fontSize: 24, letterSpacing: '-0.5px', color: '#fff' }}
                 component={RouterLink}
                 to="/"
                 style={{ textDecoration: 'none' }}
@@ -101,14 +97,14 @@ const Footer: React.FC = () => {
               </Typography>
             </Box>
             {settings?.contacts?.address && (
-              <Typography variant="body1" sx={{ mt: 1, mb: 1, fontWeight: 500, fontSize: 18 }}>
+              <Typography variant="body1" sx={{ mt: 1, mb: 1, fontWeight: 500, fontSize: 18, color: '#fff' }}>
                 {settings.contacts.address}
               </Typography>
             )}
-            <Typography variant="body1" sx={{ fontWeight: 600, fontSize: 18, mb: 1 }}>
+            <Typography variant="body1" sx={{ fontWeight: 600, fontSize: 18, mb: 1, color: '#fff' }}>
               {settings?.contacts?.email && (
                 <>
-                  <Link href={`mailto:${settings.contacts.email}`} color="inherit" underline="hover" sx={{ fontWeight: 700, fontSize: 18 }}>
+                  <Link href={`mailto:${settings.contacts.email}`} underline="hover" sx={{ fontWeight: 700, fontSize: 18, color: '#fff !important' }}>
                     {settings.contacts.email}
                   </Link>
                 </>
@@ -117,7 +113,7 @@ const Footer: React.FC = () => {
                 <>
                   {' '}
                   {settings?.contacts?.email ? ' | ' : ''}
-                  <Link href={`tel:${settings.contacts.phone}`} color="inherit" underline="hover" sx={{ fontWeight: 700, fontSize: 18 }}>
+                  <Link href={`tel:${settings.contacts.phone}`} underline="hover" sx={{ fontWeight: 700, fontSize: 18, color: '#fff !important' }}>
                     {settings.contacts.phone}
                   </Link>
                 </>
@@ -126,17 +122,17 @@ const Footer: React.FC = () => {
             <Divider sx={{ my: 2, borderColor: 'rgba(255,255,255,0.2)' }} />
             <Box display="flex" justifyContent="center" gap={3}>
               {settings?.misc?.privacy && (
-                <Link href={String(settings.misc.privacy).startsWith('http') ? settings.misc.privacy : `/api${settings.misc.privacy}`} target="_blank" rel="noopener" color="inherit" underline="hover" sx={{ fontSize: 16, fontWeight: 500 }}>
+                <Link href={String(settings.misc.privacy).startsWith('http') ? settings.misc.privacy : `/api${settings.misc.privacy}`} target="_blank" rel="noopener" underline="hover" sx={{ fontSize: 16, fontWeight: 500, color: '#fff !important' }}>
                   Политика конфиденциальности
                 </Link>
               )}
               {settings?.misc?.presentation && (
-                <Link href={String(settings.misc.presentation).startsWith('http') ? settings.misc.presentation : `/api${settings.misc.presentation}`} target="_blank" rel="noopener" color="inherit" underline="hover" sx={{ fontSize: 16, fontWeight: 500 }}>
+                <Link href={String(settings.misc.presentation).startsWith('http') ? settings.misc.presentation : `/api${settings.misc.presentation}`} target="_blank" rel="noopener" underline="hover" sx={{ fontSize: 16, fontWeight: 500, color: '#fff !important' }}>
                   Презентация
                 </Link>
               )}
             </Box>
-            <Typography variant="body2" sx={{ mt: 2, opacity: 0.7, fontSize: 15 }}>
+            <Typography variant="body2" sx={{ mt: 2, opacity: 0.7, fontSize: 15, color: '#fff' }}>
               © {new Date().getFullYear()} Все права защищены.
             </Typography>
           </Box>
