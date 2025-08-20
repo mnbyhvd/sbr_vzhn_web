@@ -46,7 +46,7 @@ const Logo = () => (
       }}
     >
       <Typography variant="h6" sx={{ color: '#fff', fontWeight: 700, letterSpacing: 1, fontSize: 18 }}>
-        СВ
+        sv
       </Typography>
     </Box>
     <Typography
@@ -56,7 +56,7 @@ const Logo = () => (
       to="/dashboard"
       style={{ textDecoration: 'none' }}
     >
-      Admin
+      saybervizhn
     </Typography>
   </Box>
 );
