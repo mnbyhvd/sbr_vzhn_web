@@ -136,12 +136,12 @@ const ProjectsListPage: React.FC = () => {
               {/* Логотип клиента */}
               {project.image ? (
                 <Box sx={{ 
-                  height: { xs: 48, md: 56 }, 
-                  display: 'flex', 
+                  display: { xs: 'none', md: 'flex' },
+                  height: { md: 56 }, 
                   alignItems: 'center', 
-                  mr: { xs: 1, md: 2 }, 
+                  mr: { md: 2 }, 
                   flexShrink: 0,
-                  minWidth: { xs: 48, md: 56 }
+                  minWidth: { md: 56 }
                 }}>
                   <img
                     src={project.image.startsWith('http') ? project.image : `/api${project.image}`}
@@ -157,9 +157,10 @@ const ProjectsListPage: React.FC = () => {
                 </Box>
               ) : (
                 <Avatar sx={{ 
-                  width: { xs: 48, md: 56 }, 
-                  height: { xs: 48, md: 56 }, 
-                  mr: { xs: 1, md: 2 }, 
+                  display: { xs: 'none', md: 'inline-flex' },
+                  width: { md: 56 }, 
+                  height: { md: 56 }, 
+                  mr: { md: 2 }, 
                   flexShrink: 0, 
                   bgcolor: '#e0e0e0', 
                   color: '#222', 
@@ -172,22 +173,22 @@ const ProjectsListPage: React.FC = () => {
                 <Typography variant="h6" sx={{ fontWeight: 700, mb: 0.5 }}>{project.title}</Typography>
                 <Typography variant="body2" sx={{ color: 'text.secondary', mb: 1 }}>{project.description}</Typography>
                 {project.directions && project.directions.length > 0 && (
-                                  <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap', mb: 1 }}>
-                  {project.directions.map(dir => (
-                    <Chip key={dir.id} label={dir.title} size="small" color="primary" />
-                  ))}
+                  <Box sx={{ display: { xs: 'none', md: 'flex' }, gap: 1, flexWrap: 'wrap', mb: 1 }}>
+                    {project.directions.map(dir => (
+                      <Chip key={dir.id} label={dir.title} size="small" color="primary" />
+                    ))}
+                  </Box>
+                )}
+                <Box sx={{ 
+                  display: { xs: 'none', md: 'flex' }, 
+                  gap: 2, 
+                  flexWrap: 'wrap', 
+                  color: 'text.secondary', 
+                  fontSize: 15 
+                }}>
+                  <span>Клиент: <b>{project.client}</b></span>
+                  <span>Отрасль: <b>{project.industry}</b></span>
                 </Box>
-              )}
-              <Box sx={{ 
-                display: { xs: 'none', md: 'flex' }, 
-                gap: 2, 
-                flexWrap: 'wrap', 
-                color: 'text.secondary', 
-                fontSize: 15 
-              }}>
-                <span>Клиент: <b>{project.client}</b></span>
-                <span>Отрасль: <b>{project.industry}</b></span>
-              </Box>
               </Box>
             </Paper>
           ))}

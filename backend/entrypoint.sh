@@ -14,8 +14,9 @@ npx prisma migrate deploy
 
 if [ $? -eq 0 ]; then
   echo "✅ Migrations applied successfully!"
-  echo "🌱 Running seed data..."
-  npx prisma db seed || echo "⚠️ Seed data already exists or failed"
+  # Seed отключен - запускается только вручную при необходимости
+  # echo "🌱 Running seed data..."
+  # npx prisma db seed || echo "⚠️ Seed data already exists or failed"
   echo "🚀 Starting application..."
   npm start
 else
@@ -24,8 +25,9 @@ else
   npx prisma migrate reset --force
   if [ $? -eq 0 ]; then
     echo "✅ Database reset successful!"
-    echo "🌱 Running seed data..."
-    npx prisma db seed || echo "⚠️ Seed data failed"
+    # Seed отключен - запускается только вручную при необходимости
+    # echo "🌱 Running seed data..."
+    # npx prisma db seed || echo "⚠️ Seed data failed"
     echo "🚀 Starting application..."
     npm start
   else
